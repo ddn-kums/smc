@@ -1,0 +1,30 @@
+=== NVMe Device NUMA Mapping ===
+
+Format: PCI_Address | NUMA_Node | Driver | Vendor:Device | Model | NVMe_Name
+--------------------------------------------------------------------------------
+0000:01:00.0    | 0         | nvme       | 0x1179:0x011a | KXG60ZNV512G TOSHIBA | (nvme8)
+0000:21:00.0    | 0         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme6)
+0000:22:00.0    | 0         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme0)
+0000:23:00.0    | 0         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme3)
+0000:24:00.0    | 0         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme11)
+0000:61:00.0    | 0         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme10)
+0000:62:00.0    | 0         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme4)
+0000:63:00.0    | 0         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme1)
+0000:64:00.0    | 0         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme12)
+0000:e1:00.0    | 1         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme9)
+0000:e2:00.0    | 1         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme2)
+0000:e3:00.0    | 1         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme7)
+0000:e4:00.0    | 1         | nvme       | 0x144d:0xa808 | SAMSUNG MZQLB1T9HAJR-00007 | (nvme5)
+
+=== NUMA Summary ===
+
+NUMA Node | Total | vfio-pci | nvme driver
+----------|-------|----------|------------
+0         | 9     | 0        | 9          
+1         | 4     | 0        | 4          
+
+=== NUMA Topology ===
+
+NUMA node(s):                         2
+NUMA node0 CPU(s):                    0-23,48-71
+NUMA node1 CPU(s):                    24-47,72-95
