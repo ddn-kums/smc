@@ -24,14 +24,10 @@ description:
 
 etcd:
   resources:
-    cpuset: "49-50"
+    cpuset: "48,60"
     mem_limit: 8192
-
 reds3:
   resources:
-    reds3_cpuset: "28,36,38,40,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94"
-    redfs_cpuset: "29,37,39,41,53,55,57,59,61,63,65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95"
-    reds3_sibling_cpuset: "28:29,36:37,38:39,40:41,52:53,54:55,56:57,58:59,60:61,62:63,64:65,66:67,68:69,70:71,72:73,74:75,76:77,78:79,80:81,82:83,84:85,86:87,88:89,90:91,92:93,94:95"
     mem_limit : 55320
   environment:
     # reds3 container cpuset is computed from COREMASK variables
@@ -40,28 +36,72 @@ reds3:
     RED_WORKLOAD: 3
     REDS3_iomem: 1
     REDS3_req_limit: 4096
+    #(for multi-lane)
+    RED_MD5_CALCULATION: 2
+    #to perform MD5 in multi-lane > 1MiB, or in red client if smaller
+    RED_MD5_THRESHOLD_BYTES: 1048576
+    #numa:reds3:redfs:net
+    REDS3_CORE_CHAINS : >
+       0:52:4:53,
+       0:54:6:53,
+       0:55:7:53,
+       0:56:8:53,
+       0:57:9:53,
+       0:58:10:53,
+       0:59:11:53,
+       0:63:15:53,
+       0:66:18:53,
+       0:67:19:53,
+       0:68:20:53,
+       0:69:21:53,
+       0:70:22:53,
+       0:71:23:53,
+       1:72:24:74,
+       1:78:30:74,
+       1:79:31:74,
+       1:80:32:74,
+       1:81:33:74,
+       1:82:34:74,
+       1:83:35:74,
+       1:87:39:74,
+       1:89:41:74,
+       1:90:42:74,
+       1:91:43:74,
+       1:92:44:74,
+       1:93:45:74,
+       1:94:46:74,
+       1:95:47:74,
 
 redagent:
   resources:
     mem_limit: 87040
-    cat_cpuset:        "7,10,19,22,31,34,4,12,14,16,24,26"
-    cat_affine_cpuset: "8,11,20,23,32,35,5,13,15,17,25,27"
-    handler_cpuset: "6-11,18-23,30-35,42,45,4-5,12-17,24-27"
-    net_cpuset: "6,9,18,21,30,33,42,45"
-    nvmf_cpuset: "6,9,18,21,30,33,42,45"
-    posix_cpuset: "1,2"
-    auxiliary_cpuset: "3"
-    spdk_main_cpuset: "51"
+    #numa:cat:cat_affine:net:nvmf
+    cat_coresets:
+      - "0:1:1:5:1"
+      - "0:2:2:5:2"
+      - "0:3:3:5:3"
+      - "0:12:12:64:12"
+      - "0:13:13:64:13"
+      - "0:14:14:64:14"
+      - "0:26:26:40:26"
+      - "0:27:27:40:27"
+      - "1:36:36:40:36"
+      - "1:37:37:73:37"
+      - "1:38:38:73:38"
+      - "1:28:28:73:28"
+
+    posix_cpuset: "17,65"
+    auxiliary_cpuset: "29"
+    spdk_main_cpuset: "77"
   environment:
     JE_MALLOC_CONF: "prof:true,prof_active:false"
 
 cluster:
   tunables:
-    rpc_credits: 128
-    c2s_credit_low: 256
-    c2s_credit_high: 384
-    rpc_c2s_credits: 128
-    rpc_s2s_credits: 256
+    c2s_credit_low: 64
+    c2s_credit_high: 128
+    rpc_c2s_credits: 32
+    rpc_s2s_credits: 128
     ring_max_ninflight: 4096
     ring_max_dequeue_size: 4096
     rpc_rdma_pool_sz: 2000
@@ -69,3 +109,4 @@ cluster:
   cats:
     bulk_cachesz: 1073741824
     bept_cachesz: 2147483648
+
