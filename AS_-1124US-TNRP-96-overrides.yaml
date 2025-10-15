@@ -1,0 +1,112 @@
+# @copyright
+#                               --- WARNING ---
+#
+#     This work contains trade secrets of DataDirect Networks, Inc.  Any
+#     unauthorized use or disclosure of the work, or any part thereof, is
+#     strictly prohibited. Any use of this work without an express license
+#     or permission is in violation of applicable laws.
+#
+# @copyright DataDirect Networks, Inc. CONFIDENTIAL AND PROPRIETARY
+# @copyright DataDirect Networks Copyright, Inc. (c) 2021-2024. All rights reserved.
+
+description:
+  node:
+    summary: This is the Default Configuration File for AS_-1124US-TNRP (SuperMicro)
+    hwmodel: Unsupported
+    comments: None
+    cores: 96
+    numa_nodes: 2
+    numa_cpu_list:
+      - numa_node: 0
+        cpulist: "0-23,48-71"
+      - numa_node: 1
+        cpulist: "24-47,72-95"
+
+etcd:
+  resources:
+    cpuset: "48,60"
+    mem_limit: 8192
+reds3:
+  resources:
+    mem_limit : 55320
+  environment:
+    # reds3 container cpuset is computed from COREMASK variables
+    RED_WIDTH: 16
+    RED_FS_S3_BUCKET_STRIPES: 128
+    RED_WORKLOAD: 3
+    REDS3_iomem: 1
+    REDS3_req_limit: 4096
+    #(for multi-lane)
+    RED_MD5_CALCULATION: 2
+    #to perform MD5 in multi-lane > 1MiB, or in red client if smaller
+    RED_MD5_THRESHOLD_BYTES: 1048576
+    #numa:reds3:redfs:net
+    REDS3_CORE_CHAINS : >
+       0:52:4:53,
+       0:54:6:53,
+       0:55:7:53,
+       0:56:8:53,
+       0:57:9:53,
+       0:58:10:53,
+       0:59:11:53,
+       0:63:15:53,
+       0:66:18:53,
+       0:67:19:53,
+       0:68:20:53,
+       0:69:21:53,
+       0:70:22:53,
+       0:71:23:53,
+       1:72:24:74,
+       1:78:30:74,
+       1:79:31:74,
+       1:80:32:74,
+       1:81:33:74,
+       1:82:34:74,
+       1:83:35:74,
+       1:87:39:74,
+       1:89:41:74,
+       1:90:42:74,
+       1:91:43:74,
+       1:92:44:74,
+       1:93:45:74,
+       1:94:46:74,
+       1:95:47:74,
+
+redagent:
+  resources:
+    mem_limit: 87040
+    #numa:cat:cat_affine:net:nvmf
+    cat_coresets:
+      - "0:1:1:5:1"
+      - "0:2:2:5:2"
+      - "0:3:3:5:3"
+      - "0:12:12:64:12"
+      - "0:13:13:64:13"
+      - "0:14:14:64:14"
+      - "0:26:26:40:26"
+      - "0:27:27:40:27"
+      - "1:36:36:40:36"
+      - "1:37:37:73:37"
+      - "1:38:38:73:38"
+      - "1:28:28:73:28"
+
+    posix_cpuset: "17,65"
+    auxiliary_cpuset: "29"
+    spdk_main_cpuset: "77"
+  environment:
+    JE_MALLOC_CONF: "prof:true,prof_active:false"
+
+cluster:
+  tunables:
+    c2s_credit_low: 64
+    c2s_credit_high: 128
+    rpc_c2s_credits: 32
+    rpc_s2s_credits: 128
+    ring_max_ninflight: 4096
+    ring_max_dequeue_size: 4096
+    rpc_rdma_pool_sz: 2000
+    client_rdma_pool_sz: 2000
+  cats:
+    bulk_cachesz: 1073741824
+    bept_cachesz: 2147483648
+
