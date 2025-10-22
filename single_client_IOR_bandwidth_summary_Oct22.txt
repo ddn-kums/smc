@@ -1,0 +1,214 @@
+write         971.86     930.77     954.87      17.51     485.93     465.38     477.43       8.76  549.25542         NA            NA     0      1   1    3   1     1        1         0    0      1 549755813888  2097152  524288.0 POSIX      0
+read         1296.94    1258.16    1279.17      15.99     648.47     629.08     639.58       8.00  409.93097         NA            NA     0      1   1    3   1     1        1         0    0      1 549755813888  2097152  524288.0 POSIX      0
+write        1922.35    1811.96    1856.36      47.59     961.18     905.98     928.18      23.79  282.61144         NA            NA     0      2   2    3   1     1        1         0    0      1 274877906944  2097152  524288.0 POSIX      0
+read         2573.80    2383.80    2457.01      83.46    1286.90    1191.90    1228.50      41.73  213.62588         NA            NA     0      2   2    3   1     1        1         0    0      1 274877906944  2097152  524288.0 POSIX      0
+write        3748.64    3689.26    3716.13      24.57    1874.32    1844.63    1858.06      12.29  141.09065         NA            NA     0      4   4    3   1     1        1         0    0      1 137438953472  2097152  524288.0 POSIX      0
+read         4954.16    4483.97    4746.95     195.97    2477.08    2241.98    2373.48      97.98  110.63912         NA            NA     0      4   4    3   1     1        1         0    0      1 137438953472  2097152  524288.0 POSIX      0
+write        7371.96    6541.26    6838.97     377.74    3685.98    3270.63    3419.49     188.87   76.88773         NA            NA     0      8   8    3   1     1        1         0    0      1 68719476736  2097152  524288.0 POSIX      0
+read         9417.51    6976.92    8513.59    1092.22    4708.76    3488.46    4256.80     546.11   62.71326         NA            NA     0      8   8    3   1     1        1         0    0      1 68719476736  2097152  524288.0 POSIX      0
+write       12498.34   11366.98   12106.99     523.56    6249.17    5683.49    6053.49     261.78   43.38827         NA            NA     0     16  16    3   1     1        1         0    0      1 34359738368  2097152  524288.0 POSIX      0
+read        14790.14   14332.54   14527.36     192.90    7395.07    7166.27    7263.68      96.45   36.09603         NA            NA     0     16  16    3   1     1        1         0    0      1 34359738368  2097152  524288.0 POSIX      0
+write       15922.01   14401.89   15366.95     684.96    7961.01    7200.95    7683.47     342.48   34.18796         NA            NA     0     32  32    3   1     1        1         0    0      1 17179869184  2097152  524288.0 POSIX      0
+read        15233.88   14602.22   14869.05     267.02    7616.94    7301.11    7434.53     133.51   35.27162         NA            NA     0     32  32    3   1     1        1         0    0      1 17179869184  2097152  524288.0 POSIX      0
+write       16522.60   15954.47   16325.47     262.51    8261.30    7977.23    8162.74     131.26   32.12312         NA            NA     0     64  64    3   1     1        1         0    0      1 8589934592  2097152  524288.0 POSIX      0
+read        17543.33   16464.02   17122.77     471.72    8771.66    8232.01    8561.39     235.86   30.64301         NA            NA     0     64  64    3   1     1        1         0    0      1 8589934592  2097152  524288.0 POSIX      0
+
+####
+
+
+***IOR Scaling Test: Sequential  
+------------------------------------
+Wed Oct 22 01:25:49 PM MDT 2025
+# Iteration: 3 Process_Count: 8, I/O Request Size: '2048'k
+mpirun -f /home/krajara/mpi/mf.txt -n 8 /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t '2048'k -b '64'g -o /redfs/ior_out/iorfppdioseq6-8-2048
+IOR-4.0.0: MPI Coordinated Test of Parallel I/O
+Began               : Wed Oct 22 13:25:49 2025
+Command line        : /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t 2048k -b 64g -o /redfs/ior_out/iorfppdioseq6-8-2048
+Machine             : Linux lux01
+TestID              : 0
+StartTime           : Wed Oct 22 13:25:49 2025
+Path                : /redfs/ior_out/iorfppdioseq6-8-2048.00000000
+FS                  : 200.3 TiB   Used FS: 1.1%   Inodes: 279117.7 Mi   Used Inodes: 0.0%
+
+Options: 
+api                 : POSIX
+apiVersion          : 
+test filename       : /redfs/ior_out/iorfppdioseq6-8-2048
+access              : file-per-process
+type                : independent
+segments            : 1
+ordering in a file  : sequential
+ordering inter file : constant task offset
+task offset         : 1
+nodes               : 1
+tasks               : 8
+clients per node    : 8
+repetitions         : 3
+xfersize            : 2 MiB
+blocksize           : 64 GiB
+aggregate filesize  : 512 GiB
+
+Results: 
+
+access    bw(MiB/s)  IOPS       Latency(s)  block(KiB) xfer(KiB)  open(s)    wr/rd(s)   close(s)   total(s)   iter
+------    ---------  ----       ----------  ---------- ---------  --------   --------   --------   --------   ----
+write     6604       3303.20    0.002327    67108864   2048.00    0.032240   79.36      0.000179   79.39      0   
+read      9146       4573       0.001579    67108864   2048.00    0.000576   57.32      0.000047   57.32      0   
+write     6541       3272.12    0.002319    67108864   2048.00    0.036415   80.11      0.000052   80.15      1   
+read      6977       3488.55    0.002270    67108864   2048.00    0.001425   75.14      0.000442   75.15      1   
+write     7372       3688       0.002127    67108864   2048.00    0.041709   71.08      0.000037   71.12      2   
+read      9418       4709       0.001672    67108864   2048.00    0.000611   55.67      0.000043   55.67      2   
+
+Summary of all tests:
+Operation   Max(MiB)   Min(MiB)  Mean(MiB)     StdDev   Max(OPs)   Min(OPs)  Mean(OPs)     StdDev    Mean(s) Stonewall(s) Stonewall(MiB) Test# #Tasks tPN reps fPP reord reordoff reordrand seed segcnt   blksiz    xsize aggs(MiB)   API RefNum
+write        7371.96    6541.26    6838.97     377.74    3685.98    3270.63    3419.49     188.87   76.88773         NA            NA     0      8   8    3   1     1        1         0    0      1 68719476736  2097152  524288.0 POSIX      0
+read         9417.51    6976.92    8513.59    1092.22    4708.76    3488.46    4256.80     546.11   62.71326         NA            NA     0      8   8    3   1     1        1         0    0      1 68719476736  2097152  524288.0 POSIX      0
+Finished            : Wed Oct 22 13:33:18 2025
+------------------------------------
+***IOR Scaling Test: Sequential  
+------------------------------------
+Wed Oct 22 01:33:22 PM MDT 2025
+# Iteration: 3 Process_Count: 16, I/O Request Size: '2048'k
+mpirun -f /home/krajara/mpi/mf.txt -n 16 /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t '2048'k -b '32'g -o /redfs/ior_out/iorfppdioseq6-16-2048
+IOR-4.0.0: MPI Coordinated Test of Parallel I/O
+Began               : Wed Oct 22 13:33:22 2025
+Command line        : /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t 2048k -b 32g -o /redfs/ior_out/iorfppdioseq6-16-2048
+Machine             : Linux lux01
+TestID              : 0
+StartTime           : Wed Oct 22 13:33:22 2025
+Path                : /redfs/ior_out/iorfppdioseq6-16-2048.00000000
+FS                  : 200.3 TiB   Used FS: 1.0%   Inodes: 279374.6 Mi   Used Inodes: 0.0%
+
+Options: 
+api                 : POSIX
+apiVersion          : 
+test filename       : /redfs/ior_out/iorfppdioseq6-16-2048
+access              : file-per-process
+type                : independent
+segments            : 1
+ordering in a file  : sequential
+ordering inter file : constant task offset
+task offset         : 1
+nodes               : 1
+tasks               : 16
+clients per node    : 16
+repetitions         : 3
+xfersize            : 2 MiB
+blocksize           : 32 GiB
+aggregate filesize  : 512 GiB
+
+Results: 
+
+access    bw(MiB/s)  IOPS       Latency(s)  block(KiB) xfer(KiB)  open(s)    wr/rd(s)   close(s)   total(s)   iter
+------    ---------  ----       ----------  ---------- ---------  --------   --------   --------   --------   ----
+write     11367      5693       0.002775    33554432   2048.00    0.074029   46.05      0.000064   46.12      0   
+read      14790      7395       0.002144    33554432   2048.00    0.000594   35.45      0.000057   35.45      0   
+write     12456      6239       0.002505    33554432   2048.00    0.073822   42.02      0.000054   42.09      1   
+read      14459      7230       0.002113    33554432   2048.00    0.000600   36.26      0.000065   36.26      1   
+write     12498      6260       0.002485    33554432   2048.00    0.073523   41.88      0.000052   41.95      2   
+read      14333      7166       0.002102    33554432   2048.00    0.000696   36.58      0.000064   36.58      2   
+
+Summary of all tests:
+Operation   Max(MiB)   Min(MiB)  Mean(MiB)     StdDev   Max(OPs)   Min(OPs)  Mean(OPs)     StdDev    Mean(s) Stonewall(s) Stonewall(MiB) Test# #Tasks tPN reps fPP reord reordoff reordrand seed segcnt   blksiz    xsize aggs(MiB)   API RefNum
+write       12498.34   11366.98   12106.99     523.56    6249.17    5683.49    6053.49     261.78   43.38827         NA            NA     0     16  16    3   1     1        1         0    0      1 34359738368  2097152  524288.0 POSIX      0
+read        14790.14   14332.54   14527.36     192.90    7395.07    7166.27    7263.68      96.45   36.09603         NA            NA     0     16  16    3   1     1        1         0    0      1 34359738368  2097152  524288.0 POSIX      0
+Finished            : Wed Oct 22 13:37:50 2025
+------------------------------------
+***IOR Scaling Test: Sequential  
+------------------------------------
+Wed Oct 22 01:37:55 PM MDT 2025
+# Iteration: 3 Process_Count: 32, I/O Request Size: '2048'k
+mpirun -f /home/krajara/mpi/mf.txt -n 32 /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t '2048'k -b '16'g -o /redfs/ior_out/iorfppdioseq6-32-2048
+IOR-4.0.0: MPI Coordinated Test of Parallel I/O
+Began               : Wed Oct 22 13:37:55 2025
+Command line        : /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t 2048k -b 16g -o /redfs/ior_out/iorfppdioseq6-32-2048
+Machine             : Linux lux01
+TestID              : 0
+StartTime           : Wed Oct 22 13:37:55 2025
+Path                : /redfs/ior_out/iorfppdioseq6-32-2048.00000000
+FS                  : 200.3 TiB   Used FS: 2.1%   Inodes: 276468.0 Mi   Used Inodes: 0.0%
+
+Options: 
+api                 : POSIX
+apiVersion          : 
+test filename       : /redfs/ior_out/iorfppdioseq6-32-2048
+access              : file-per-process
+type                : independent
+segments            : 1
+ordering in a file  : sequential
+ordering inter file : constant task offset
+task offset         : 1
+nodes               : 1
+tasks               : 32
+clients per node    : 32
+repetitions         : 3
+xfersize            : 2 MiB
+blocksize           : 16 GiB
+aggregate filesize  : 512 GiB
+
+Results: 
+
+access    bw(MiB/s)  IOPS       Latency(s)  block(KiB) xfer(KiB)  open(s)    wr/rd(s)   close(s)   total(s)   iter
+------    ---------  ----       ----------  ---------- ---------  --------   --------   --------   --------   ----
+write     14402      7227       0.003765    16777216   2048.00    0.129141   36.27      0.000079   36.40      0   
+read      15234      7617       0.004007    16777216   2048.00    0.000888   34.41      0.000068   34.42      0   
+write     15922      7999       0.003885    16777216   2048.00    0.154921   32.77      0.000074   32.93      1   
+read      14602      7301       0.004149    16777216   2048.00    0.001010   35.90      0.000078   35.90      1   
+write     15777      7916       0.003862    16777216   2048.00    0.115711   33.12      0.000059   33.23      2   
+read      14771      7386       0.004036    16777216   2048.00    0.001026   35.49      0.000072   35.49      2   
+
+Summary of all tests:
+Operation   Max(MiB)   Min(MiB)  Mean(MiB)     StdDev   Max(OPs)   Min(OPs)  Mean(OPs)     StdDev    Mean(s) Stonewall(s) Stonewall(MiB) Test# #Tasks tPN reps fPP reord reordoff reordrand seed segcnt   blksiz    xsize aggs(MiB)   API RefNum
+write       15922.01   14401.89   15366.95     684.96    7961.01    7200.95    7683.47     342.48   34.18796         NA            NA     0     32  32    3   1     1        1         0    0      1 17179869184  2097152  524288.0 POSIX      0
+read        15233.88   14602.22   14869.05     267.02    7616.94    7301.11    7434.53     133.51   35.27162         NA            NA     0     32  32    3   1     1        1         0    0      1 17179869184  2097152  524288.0 POSIX      0
+Finished            : Wed Oct 22 13:41:54 2025
+------------------------------------
+***IOR Scaling Test: Sequential  
+------------------------------------
+Wed Oct 22 01:41:58 PM MDT 2025
+# Iteration: 3 Process_Count: 64, I/O Request Size: '2048'k
+mpirun -f /home/krajara/mpi/mf.txt -n 64 /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t '2048'k -b '8'g -o /redfs/ior_out/iorfppdioseq6-64-2048
+IOR-4.0.0: MPI Coordinated Test of Parallel I/O
+Began               : Wed Oct 22 13:41:58 2025
+Command line        : /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t 2048k -b 8g -o /redfs/ior_out/iorfppdioseq6-64-2048
+Machine             : Linux lux01
+TestID              : 0
+StartTime           : Wed Oct 22 13:41:58 2025
+Path                : /redfs/ior_out/iorfppdioseq6-64-2048.00000000
+FS                  : 200.3 TiB   Used FS: 2.6%   Inodes: 274930.8 Mi   Used Inodes: 0.0%
+
+Options: 
+api                 : POSIX
+apiVersion          : 
+test filename       : /redfs/ior_out/iorfppdioseq6-64-2048
+access              : file-per-process
+type                : independent
+segments            : 1
+ordering in a file  : sequential
+ordering inter file : constant task offset
+task offset         : 1
+nodes               : 1
+tasks               : 64
+clients per node    : 64
+repetitions         : 3
+xfersize            : 2 MiB
+blocksize           : 8 GiB
+aggregate filesize  : 512 GiB
+
+Results: 
+
+access    bw(MiB/s)  IOPS       Latency(s)  block(KiB) xfer(KiB)  open(s)    wr/rd(s)   close(s)   total(s)   iter
+------    ---------  ----       ----------  ---------- ---------  --------   --------   --------   --------   ----
+write     15954      8028       0.006828    8388608    2048.00    0.206180   32.66      0.000219   32.86      0   
+read      17543      8776       0.006723    8388608    2048.00    0.013067   29.87      0.000560   29.89      0   
+write     16523      8324       0.007540    8388608    2048.00    0.237128   31.49      0.000117   31.73      1   
+read      16464      8232       0.007151    8388608    2048.00    0.001351   31.84      0.000266   31.84      1   
+write     16499      8314       0.007378    8388608    2048.00    0.243995   31.53      0.000117   31.78      2   
+read      17361      8681       0.007368    8388608    2048.00    0.002470   30.20      0.000161   30.20      2   
+
+Summary of all tests:
+Operation   Max(MiB)   Min(MiB)  Mean(MiB)     StdDev   Max(OPs)   Min(OPs)  Mean(OPs)     StdDev    Mean(s) Stonewall(s) Stonewall(MiB) Test# #Tasks tPN reps fPP reord reordoff reordrand seed segcnt   blksiz    xsize aggs(MiB)   API RefNum
+write       16522.60   15954.47   16325.47     262.51    8261.30    7977.23    8162.74     131.26   32.12312         NA            NA     0     64  64    3   1     1        1         0    0      1 8589934592  2097152  524288.0 POSIX      0
+read        17543.33   16464.02   17122.77     471.72    8771.66    8232.01    8561.39     235.86   30.64301         NA            NA     0     64  64    3   1     1        1         0    0      1 8589934592  2097152  524288.0 POSIX      0
+Finished            : Wed Oct 22 13:45:38 2025
+------------------------------------
