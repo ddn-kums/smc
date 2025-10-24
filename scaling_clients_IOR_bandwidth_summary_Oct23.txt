@@ -1,0 +1,438 @@
+write       12640.12   10388.89   11823.19    1017.47    6320.06    5194.45    5911.59     508.73   44.69592         NA            NA     0     16  16    3   1     1        1         0    0      1 34359738368  2097152  524288.0 POSIX      0
+write       17805.52   17507.67   17698.34     135.17    8902.76    8753.83    8849.17      67.59   59.25061         NA            NA     0     32  16    3   1     1        1         0    0      1 34359738368  2097152 1048576.0 POSIX      0
+write       17133.43   16189.92   16529.32     428.26    8566.71    8094.96    8264.66     214.13  126.95841         NA            NA     0     64  16    3   1     1        1         0    0      1 34359738368  2097152 2097152.0 POSIX      0
+write       18071.36   17750.57   17884.79     136.09    9035.68    8875.28    8942.39      68.05  234.53151         NA            NA     0    128  16    3   1     1        1         0    0      1 34359738368  2097152 4194304.0 POSIX      0
+write       18781.46   18071.97   18374.61     298.87    9390.73    9035.99    9187.31     149.44  342.48930         NA            NA     0    192  16    3   1     1        1         0    0      1 34359738368  2097152 6291456.0 POSIX      0
+write       19972.20   18962.29   19442.70     413.75    9986.10    9481.15    9721.35     206.88  431.64757         NA            NA     0    256  16    3   1     1        1         0    0      1 34359738368  2097152 8388608.0 POSIX      0
+write       20236.77   19722.60   20047.74     230.93   10118.39    9861.30   10023.87     115.46  523.10938         NA            NA     0    320  16    3   1     1        1         0    0      1 34359738368  2097152 10485760.0 POSIX      0
+write       20352.15   20041.13   20201.93     127.19   10176.07   10020.56   10100.97      63.60  622.88150         NA            NA     0    384  16    3   1     1        1         0    0      1 34359738368  2097152 12582912.0 POSIX      0
+write       19848.26   18647.37   19404.31     537.90    9924.13    9323.69    9702.16     268.95  432.64515         NA            NA     0    256  16    3   1     1        1         0    0      1 34359738368  2097152 8388608.0 POSIX      0
+
+--
+
+
+read        14752.54   14130.20   14506.84     270.42    7376.27    7065.10    7253.42     135.21   36.15345         NA            NA     0     16  16    3   1     1        1         0    0      1 34359738368  2097152  524288.0 POSIX      0
+read        27961.33   27475.68   27730.12     198.95   13980.66   13737.84   13865.06      99.47   37.81556         NA            NA     0     32  16    3   1     1        1         0    0      1 34359738368  2097152 1048576.0 POSIX      0
+read        49748.74   44679.17   47928.57    2303.21   24874.37   22339.58   23964.28    1151.61   43.86056         NA            NA     0     64  16    3   1     1        1         0    0      1 34359738368  2097152 2097152.0 POSIX      0
+read        67055.46   42186.76   57575.09   10978.50   33527.73   21093.38   28787.54    5489.25   76.01391         NA            NA     0    128  16    3   1     1        1         0    0      1 34359738368  2097152 4194304.0 POSIX      0
+read        98871.84   90767.42   95909.47    3649.99   49435.92   45383.71   47954.74    1825.00   65.69555         NA            NA     0    192  16    3   1     1        1         0    0      1 34359738368  2097152 6291456.0 POSIX      0
+read       101696.77   81173.06   94658.97    9539.02   50848.38   40586.53   47329.49    4769.51   89.59877         NA            NA     0    256  16    3   1     1        1         0    0      1 34359738368  2097152 8388608.0 POSIX      0
+read       121345.00  119306.86  120654.83     953.25   60672.50   59653.43   60327.41     476.62   86.91254         NA            NA     0    320  16    3   1     1        1         0    0      1 34359738368  2097152 10485760.0 POSIX      0
+read       123188.61   61874.49   85252.47   27065.48   61594.30   30937.24   42626.23   13532.74  161.16526         NA            NA     0    384  16    3   1     1        1         0    0      1 34359738368  2097152 12582912.0 POSIX      0
+read       102100.96  100997.84  101654.43     474.21   51050.48   50498.92   50827.22     237.11   82.52263         NA            NA     0    256  16    3   1     1        1         0    0      1 34359738368  2097152 8388608.0 POSIX      0
+
+---
+
+NC=20, NP=320
+
+Thu Oct 23 12:35:50 PM MDT 2025
+# Iteration: 3 Process_Count: 320, I/O Request Size: '2048'k
+mpirun -f /home/krajara/mpi/mf.txt -n 320 /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t '2048'k -b '32'g -o /redfs/ior_out/iorfppdioseq12-320-2048
+IOR-4.0.0: MPI Coordinated Test of Parallel I/O
+Began               : Thu Oct 23 12:35:51 2025
+Command line        : /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t 2048k -b 32g -o /redfs/ior_out/iorfppdioseq12-320-2048
+Machine             : Linux lux01
+TestID              : 0
+StartTime           : Thu Oct 23 12:35:51 2025
+Path                : /redfs/ior_out/iorfppdioseq12-320-2048.00000000
+FS                  : 200.3 TiB   Used FS: 0.0%   Inodes: 282223.0 Mi   Used Inodes: 0.0%
+
+Options:
+api                 : POSIX
+apiVersion          :
+test filename       : /redfs/ior_out/iorfppdioseq12-320-2048
+access              : file-per-process
+type                : independent
+segments            : 1
+ordering in a file  : sequential
+ordering inter file : constant task offset
+task offset         : 1
+nodes               : 20
+tasks               : 320
+clients per node    : 16
+repetitions         : 3
+xfersize            : 2 MiB
+blocksize           : 32 GiB
+aggregate filesize  : 10 TiB
+
+Results:
+
+access    bw(MiB/s)  IOPS       Latency(s)  block(KiB) xfer(KiB)  open(s)    wr/rd(s)   close(s)   total(s)   iter
+------    ---------  ----       ----------  ---------- ---------  --------   --------   --------   --------   ----
+write     20184      11564      0.026933    33554432   2048.00    66.11      453.40     0.000440   519.51     0
+read      121313     60663      0.005068    33554432   2048.00    0.008615   86.43      0.001003   86.44      0
+write     20237      11302      0.028088    33554432   2048.00    54.26      463.89     0.000837   518.15     1
+read      121345     60681      0.004965    33554432   2048.00    0.011078   86.40      0.000661   86.41      1
+write     19723      10882      0.028942    33554432   2048.00    49.86      481.81     0.000647   531.66     2
+read      119307     59657      0.005196    33554432   2048.00    0.005259   87.88      0.000824   87.89      2
+
+Summary of all tests:
+Operation   Max(MiB)   Min(MiB)  Mean(MiB)     StdDev   Max(OPs)   Min(OPs)  Mean(OPs)     StdDev    Mean(s) Stonewall(s) Stonewall(MiB) Test# #Tasks tPN reps fPP reord reordoff reordrand seed segcnt   blksiz    xsize aggs(MiB)   API RefNum
+write       20236.77   19722.60   20047.74     230.93   10118.39    9861.30   10023.87     115.46  523.10938         NA            NA     0    320  16    3   1     1        1         0    0      1 34359738368  2097152 10485760.0 POSIX      0
+read       121345.00  119306.86  120654.83     953.25   60672.50   59653.43   60327.41     476.62   86.91254         NA            NA     0    320  16    3   1     1        1         0    0      1 34359738368  2097152 10485760.0 POSIX      0
+Finished            : Thu Oct 23 13:07:23 2025
+------------------------------------
+
+NC=24, NP=384
+
+# Iteration: 3 Process_Count: 384, I/O Request Size: '2048'k
+mpirun -f /home/krajara/mpi/mf.txt -n 384 /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t '2048'k -b '32'g -o /redfs/ior_out/iorfppdioseq16-384-2048
+IOR-4.0.0: MPI Coordinated Test of Parallel I/O
+Began               : Thu Oct 23 13:56:25 2025
+Command line        : /home/krajara/repo/ior-4.0.0/src/ior -i 3 -a POSIX -d 5 -C -g -w -r -e -F --posix.odirect -t 2048k -b 32g -o /redfs/ior_out/iorfppdioseq16-384-2048
+Machine             : Linux lux01
+TestID              : 0
+StartTime           : Thu Oct 23 13:56:25 2025
+Path                : /redfs/ior_out/iorfppdioseq16-384-2048.00000000
+FS                  : 200.3 TiB   Used FS: 9.3%   Inodes: 256047.9 Mi   Used Inodes: 0.0%
+
+Options:
+api                 : POSIX
+apiVersion          :
+test filename       : /redfs/ior_out/iorfppdioseq16-384-2048
+access              : file-per-process
+type                : independent
+segments            : 1
+ordering in a file  : sequential
+ordering inter file : constant task offset
+task offset         : 1
+nodes               : 24
+tasks               : 384
+clients per node    : 16
+repetitions         : 3
+xfersize            : 2 MiB
+blocksize           : 32 GiB
+aggregate filesize  : 12 TiB
+
+Results:
+
+access    bw(MiB/s)  IOPS       Latency(s)  block(KiB) xfer(KiB)  open(s)    wr/rd(s)   close(s)   total(s)   iter
+------    ---------  ----       ----------  ---------- ---------  --------   --------   --------   --------   ----
+write     20041      11022      0.034494    33554432   2048.00    57.02      570.83     0.000780   627.85     0
+read      123189     61600      0.005896    33554432   2048.00    0.008304   102.13     0.000845   102.14     0
+write     20352      11326      0.032925    33554432   2048.00    62.79      555.47     0.000491   618.26     1
+read      61874      30939      0.012252    33554432   2048.00    0.010180   203.35     0.001034   203.36     1
+write     20213      11353      0.033246    33554432   2048.00    68.34      554.18     0.000665   622.53     2
+read      70694      35350      0.010686    33554432   2048.00    0.011960   177.98     0.001034   177.99     2
+
+Summary of all tests:
+Operation   Max(MiB)   Min(MiB)  Mean(MiB)     StdDev   Max(OPs)   Min(OPs)  Mean(OPs)     StdDev    Mean(s) Stonewall(s) Stonewall(MiB) Test# #Tasks tPN reps fPP reord reordoff reordrand seed segcnt   blksiz    xsize aggs(MiB)   API RefNum
+write       20352.15   20041.13   20201.93     127.19   10176.07   10020.56   10100.97      63.60  622.88150         NA            NA     0    384  16    3   1     1        1         0    0      1 34359738368  2097152 12582912.0 POSIX      0
+read       123188.61   61874.49   85252.47   27065.48   61594.30   30937.24   42626.23   13532.74  161.16526         NA            NA     0    384  16    3   1     1        1         0    0      1 34359738368  2097152 12582912.0 POSIX      0
+Finished            : Thu Oct 23 14:36:49 2025
+------------------------------------
+
+### Crash #1
+
+red01:
+
+2025-10-23 18:28:01.377808000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffecb2e4020 (size 7584, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+cwd '/var/log/red/cluster1-53122fd2-b307-4f1d-b94b-975db1e31563/1/current'
+2025-10-23 18:28:01.294685515    1  92985 13 0 src/util/red_assert.cpp:122 PANIC - src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffecb2e4020 (size 7584, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+2025-10-23 18:28:01.377797943    1  92985 13 0 src/util/backtrace.cpp:352 ===== Panic backtrace for thread 92985 [reactor_13 none] (20 frames, unwind status 0) =====
+2025-10-23 18:28:01.377798763    1  92985 13 0 src/util/backtrace.cpp:352 #0    0x7fff2d9fa230   0x7ffff03e6982  redrte_vpanic  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377798893    1  92985 13 0 src/util/backtrace.cpp:352 #1    0x7fff2d9fa280   0x7ffff03e6a89  redrte_panic  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377799023    1  92985 13 0 src/util/backtrace.cpp:352 #2    0x7fff2d9fa360   0x7ffff040c2ab  operator delete  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377799153    1  92985 13 0 src/util/backtrace.cpp:352 #3    0x7fff2d9fa3f0   0x7ffff0417193  red_metric_buffer_t::rmb_rotate  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377799283    1  92985 13 0 src/util/backtrace.cpp:352 #4    0x7fff2d9fa460   0x7ffff0417277  red_metric_observed_t::mo_rotate_buffers  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377799403    1  92985 13 0 src/util/backtrace.cpp:352 #5    0x7fff2d9fa490   0x7fffeff8ad9c  red_metric_gauge_t::inc  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377799523    1  92985 13 0 src/util/backtrace.cpp:352 #6    0x7fff2d9fa4c0   0x7fffeff93e37  net_endpt_cache_t::ec_find_endpt_locked  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377799643    1  92985 13 0 src/util/backtrace.cpp:352 #7    0x7fff2d9fa550   0x7fffeffef996  net_peer_t::np_bind_msg  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377799763    1  92985 13 0 src/util/backtrace.cpp:352 #8    0x7fff2d9fa5a0   0x7fffeffd79d8  net_msg_t::nm_bind  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377799883    1  92985 13 0 src/util/backtrace.cpp:352 #9    0x7fff2d9fa620   0x7fffeffd7dd0  net_msg_t::nm_bind_cb  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377800003    1  92985 13 0 src/util/backtrace.cpp:352 #10   0x7fff2d9fa640   0x7fffefe827bc  rpc_hndl_t::rh_bind_cb  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377800113    1  92985 13 0 src/util/backtrace.cpp:352 #11   0x7fff2d9fa690   0x7fffefe3036c  oprec_rpciniop_t::task_execute  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377800233    1  92985 13 0 src/util/backtrace.cpp:352 #12   0x7fff2d9fa710   0x7fffefed0d3d  task_t::task_run  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377800353    1  92985 13 0 src/util/backtrace.cpp:352 #13   0x7fff2d9fa7e0   0x7fffefedcaf9  task_scheduler_t::ts_run_ready  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377800463    1  92985 13 0 src/util/backtrace.cpp:352 #14   0x7fff2d9fa850   0x7fffefedd85d  task_scheduler_t::ts_run_scheduler  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377800583    1  92985 13 0 src/util/backtrace.cpp:352 #15   0x7fff2d9fa930   0x7fffefe637ac  reactor_hndlr_t::rh_run_scheduler  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377800703    1  92985 13 0 src/util/backtrace.cpp:352 #16   0x7fff2d9fa980   0x7ffff0541ae4  redrte_poller_ctx_t::rpc_poller_work_s  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377800823    1  92985 13 0 src/util/backtrace.cpp:352 #17   0x7fff2d9fa9f0   0x7fffef9d9b39  thread_execute_poller  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377800943    1  92985 13 0 src/util/backtrace.cpp:352 #18   0x7fff2d9faa20   0x7fffef9da0f0  thread_poll  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377801063    1  92985 13 0 src/util/backtrace.cpp:352 #19   0x7fff2d9faa80   0x7fffef9da3d1  spdk_thread_poll  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 18:28:01.377907484    1  92985 13 0 src/mgr/gossip_mgr.cpp:3175 gm_suspend: Suspending Gossip Manager
+2025-10-23 18:28:01.378081977    1  92985 13 0 src/mgr/red_main.cpp:1202 Halting due to: panic, code 1
+tracer thread: suspending all threads...
+tracer thread: finished in 9 second(s)
+2025-10-23 18:28:14.428454000 WARNG 15 reactor(s) stalled; the longest stall is 13 sec on reactor #13
+Dumping a core file
+
+red05:
+
+2025-10-23 22:14:11.631733000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffec96e4020 (size 7584, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+cwd '/var/log/red/cluster1-53122fd2-b307-4f1d-b94b-975db1e31563/4/current'
+2025-10-23 22:14:11.547648956    4   1245 28 0 src/util/red_assert.cpp:122 PANIC - src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffec96e4020 (size 7584, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+2025-10-23 22:14:11.631723561    4   1245 28 0 src/util/backtrace.cpp:352 ===== Panic backtrace for thread 1245 [reactor_28 none] (20 frames, unwind status 0) =====
+2025-10-23 22:14:11.631724221    4   1245 28 0 src/util/backtrace.cpp:352 #0    0x7fff2cdfa230   0x7ffff03e6982  redrte_vpanic  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631724341    4   1245 28 0 src/util/backtrace.cpp:352 #1    0x7fff2cdfa280   0x7ffff03e6a89  redrte_panic  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631724461    4   1245 28 0 src/util/backtrace.cpp:352 #2    0x7fff2cdfa360   0x7ffff040c2ab  operator delete  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631724591    4   1245 28 0 src/util/backtrace.cpp:352 #3    0x7fff2cdfa3f0   0x7ffff0417193  red_metric_buffer_t::rmb_rotate  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631724711    4   1245 28 0 src/util/backtrace.cpp:352 #4    0x7fff2cdfa460   0x7ffff0417277  red_metric_observed_t::mo_rotate_buffers  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631724821    4   1245 28 0 src/util/backtrace.cpp:352 #5    0x7fff2cdfa490   0x7fffeff8ad9c  red_metric_gauge_t::inc  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631724941    4   1245 28 0 src/util/backtrace.cpp:352 #6    0x7fff2cdfa4c0   0x7fffeff93e37  net_endpt_cache_t::ec_find_endpt_locked  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631725061    4   1245 28 0 src/util/backtrace.cpp:352 #7    0x7fff2cdfa550   0x7fffeffef996  net_peer_t::np_bind_msg  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631725171    4   1245 28 0 src/util/backtrace.cpp:352 #8    0x7fff2cdfa5a0   0x7fffeffd79d8  net_msg_t::nm_bind  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631725291    4   1245 28 0 src/util/backtrace.cpp:352 #9    0x7fff2cdfa620   0x7fffeffd7dd0  net_msg_t::nm_bind_cb  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631725401    4   1245 28 0 src/util/backtrace.cpp:352 #10   0x7fff2cdfa640   0x7fffefe827bc  rpc_hndl_t::rh_bind_cb  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]2025-10-23 22:14:11.631725511    4   1245 28 0 src/util/backtrace.cpp:352 #11   0x7fff2cdfa690   0x7fffefe3036c  oprec_rpciniop_t::task_execute  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631725631    4   1245 28 0 src/util/backtrace.cpp:352 #12   0x7fff2cdfa710   0x7fffefed0d3d  task_t::task_run  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631725741    4   1245 28 0 src/util/backtrace.cpp:352 #13   0x7fff2cdfa7e0   0x7fffefedcaf9  task_scheduler_t::ts_run_ready  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631725851    4   1245 28 0 src/util/backtrace.cpp:352 #14   0x7fff2cdfa850   0x7fffefedd85d  task_scheduler_t::ts_run_scheduler  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631725961    4   1245 28 0 src/util/backtrace.cpp:352 #15   0x7fff2cdfa930   0x7fffefe637ac  reactor_hndlr_t::rh_run_scheduler  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631726081    4   1245 28 0 src/util/backtrace.cpp:352 #16   0x7fff2cdfa980   0x7ffff0541ae4  redrte_poller_ctx_t::rpc_poller_work_s  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631726191    4   1245 28 0 src/util/backtrace.cpp:352 #17   0x7fff2cdfa9f0   0x7fffef9d9b39  thread_execute_poller  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631726311    4   1245 28 0 src/util/backtrace.cpp:352 #18   0x7fff2cdfaa20   0x7fffef9da0f0  thread_poll  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631726431    4   1245 28 0 src/util/backtrace.cpp:352 #19   0x7fff2cdfaa80   0x7fffef9da3d1  spdk_thread_poll  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:14:11.631831173    4   1245 28 0 src/mgr/gossip_mgr.cpp:3175 gm_suspend: Suspending Gossip Manager
+2025-10-23 22:14:11.632017146    4   1245 28 0 src/mgr/red_main.cpp:1202 Halting due to: panic, code 1
+tracer thread: suspending all threads...
+tracer thread: finished in 9 second(s)
+Dumping a core file
+
+krajara@red01:~$ pdsh -w red[01,03-11] "grep CRITC /var/log/red/cluster1-53122fd2-b307-4f1d-b94b-975db1e31563/*/instance.log | grep DDN | grep Pointer" | dshbak -c
+pdsh@red01: red09: ssh exited with exit code 1
+pdsh@red01: red11: ssh exited with exit code 1
+pdsh@red01: red08: ssh exited with exit code 1
+pdsh@red01: red07: ssh exited with exit code 1
+pdsh@red01: red03: ssh exited with exit code 1
+pdsh@red01: red06: ssh exited with exit code 1
+----------------
+red01
+----------------
+2025-10-23 18:28:01.377808000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffecb2e4020 (size 7584, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+----------------
+red04
+----------------
+2025-10-16 18:05:47.805894000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffea4af0020 (size 4096, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+----------------
+red05
+----------------
+2025-10-23 22:10:31.147570000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffe99162820 (size 4368, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+2025-10-23 22:10:31.159847000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffec00d0020 (size 3504, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+2025-10-23 22:10:31.167481000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffec7f91e20 (size 2352, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+2025-10-23 22:12:11.342637000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffebe553420 (size 7008, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+2025-10-23 22:12:11.350896000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffebe553420 (size 7008, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+2025-10-23 22:14:11.631733000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffec96e4020 (size 7584, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+----------------
+red10
+----------------
+2025-10-16 18:05:48.185069000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-src/util/red_malloc_hooks.cpp:266: Pointer 0x7ffea5ef0020 (size 4096, ptr_off 32) has been corrupted! magic 0 != 1b3996203bc7c9f
+
+## Crash #2
+
+2025-10-23 22:08:53.575523000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+cwd '/var/log/red/cluster1-53122fd2-b307-4f1d-b94b-975db1e31563/4/current'
+2025-10-23 22:08:53.495166301    4    855 40 0 src/util/red_assert.cpp:122 PANIC - include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-23 22:08:53.575510768    4    855 40 0 src/util/backtrace.cpp:352 ===== Panic backtrace for thread 855 [reactor_40 none] (20 frames, unwind status 0) =====
+2025-10-23 22:08:53.575512088    4    855 40 0 src/util/backtrace.cpp:352 #0    0x7fff297fa1f0   0x7ffff03e6982  redrte_vpanic  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575512208    4    855 40 0 src/util/backtrace.cpp:352 #1    0x7fff297fa240   0x7ffff03e6a89  redrte_panic  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575512358    4    855 40 0 src/util/backtrace.cpp:352 #2    0x7fff297fa320   0x7fffeff876a4  red_metric_gauge_t::red_metric_gauge_t  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575512478    4    855 40 0 src/util/backtrace.cpp:352 #3    0x7fff297fa430   0x7fffeff89ad1  net_act_endpt_stats_t::net_act_endpt_stats_t  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575512598    4    855 40 0 src/util/backtrace.cpp:352 #4    0x7fff297fa600   0x7fffeff97616  net_act_endpt_t::net_act_endpt_t  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575512708    4    855 40 0 src/util/backtrace.cpp:352 #5    0x7fff297fa730   0x7fffeffebbeb  net_peer_endpt_slot_t::npes_create_endpt  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575512958    4    855 40 0 src/util/backtrace.cpp:352 #6    0x7fff297fa7c0   0x7fffeffebd4d  net_peer_t::np_create_endpt_locked  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575513078    4    855 40 0 src/util/backtrace.cpp:352 #7    0x7fff297fa7e0   0x7fffefff5f22  net_peer_t::np_updated_info  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575513188    4    855 40 0 src/util/backtrace.cpp:352 #8    0x7fff297fa880   0x7fffeff9da19  net_event_t::nev_process  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575513298    4    855 40 0 src/util/backtrace.cpp:352 #9    0x7fff297fa8e0   0x7fffefffda9b  net_poller_t::npl_poller_routine  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575513418    4    855 40 0 src/util/backtrace.cpp:352 #10   0x7fff297fa980   0x7ffff0541ae4  redrte_poller_ctx_t::rpc_poller_work_s  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575513528    4    855 40 0 src/util/backtrace.cpp:352 #11   0x7fff297fa9f0   0x7fffef9d9b39  thread_execute_poller  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575513648    4    855 40 0 src/util/backtrace.cpp:352 #12   0x7fff297faa20   0x7fffef9da0f0  thread_poll  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575513768    4    855 40 0 src/util/backtrace.cpp:352 #13   0x7fff297faa80   0x7fffef9da3d1  spdk_thread_poll  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575513888    4    855 40 0 src/util/backtrace.cpp:352 #14   0x7fff297faac0   0x7fffef8c10cb  _reactor_run  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575513998    4    855 40 0 src/util/backtrace.cpp:352 #15   0x7fff297fab10   0x7fffef8c11e3  reactor_run  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575514118    4    855 40 0 src/util/backtrace.cpp:352 #16   0x7fff297fab90   0x7fffefa0f506  eal_thread_loop  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]
+2025-10-23 22:08:53.575514238    4    855 40 0 src/util/backtrace.cpp:352 #17   0x7fff297fad00   0x7fffefa2120f  eal_worker_thread_loop  [/opt/ddn/red/bin/../lib/libred.so, 0x7fffef230000]2025-10-23 22:08:53.575514358    4    855 40 0 src/util/backtrace.cpp:352 #18   0x7fff297fad10   0x7fffee91faa4  pthread_condattr_setpshared  [/lib/x86_64-linux-gnu/libc.so.6, 0x7fffee883000]
+2025-10-23 22:08:53.575514478    4    855 40 0 src/util/backtrace.cpp:352 #19   0x7fff297fadc0   0x7fffee9acc3c  __clone  [/lib/x86_64-linux-gnu/libc.so.6, 0x7fffee883000]
+2025-10-23 22:08:53.575638190    4    855 40 0 src/mgr/gossip_mgr.cpp:3175 gm_suspend: Suspending Gossip Manager
+2025-10-23 22:08:53.575818033    4    855 40 0 src/mgr/red_main.cpp:1202 Halting due to: panic, code 1
+2025-10-23 22:08:55.679665000 WARNG 4 reactor(s) stalled; the longest stall is 2 sec on reactor #40
+2025-10-23 22:09:00.679799000 WARNG 4 reactor(s) stalled; the longest stall is 7 sec on reactor #40
+tracer thread: suspending all threads...
+tracer thread: finished in 9 second(s)
+2025-10-23 22:09:13.841499000 WARNG 7 reactor(s) stalled; the longest stall is 20 sec on reactor #40
+Dumping a core file
+
+krajara@red01:~$ pdsh -w red[01,03-11] "grep CRITC /var/log/red/cluster1-53122fd2-b307-4f1d-b94b-975db1e31563/*/instance.log | grep DDN | grep red_metrics" | dshbak -c
+pdsh@red01: red03: ssh exited with exit code 1
+pdsh@red01: red06: ssh exited with exit code 1
+----------------
+red01
+----------------
+2025-10-17 01:28:15.283675000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-17 06:37:10.524990000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-23 14:29:10.715991000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-23 18:26:22.503833000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-24 00:13:06.529740000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----------------
+red04
+----------------
+2025-10-17 01:19:06.162271000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----------------
+red05
+----------------
+2025-10-16 21:44:42.690012000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-23 14:31:02.087836000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-23 22:08:53.575523000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-24 06:39:17.241829000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----------------
+red07
+----------------
+2025-10-16 21:44:49.865799000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-17 09:18:40.979223000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----------------
+red08
+----------------
+2025-10-17 01:25:34.442707000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-17 08:58:15.661127000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-17 12:45:11.458321000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-17 17:54:02.558565000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-17 23:02:55.024883000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-18 02:54:43.843081000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-18 10:17:02.148280000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-19 01:31:38.650922000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-19 09:09:30.242028000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----------------
+red09
+----------------
+2025-10-23 15:22:12.680449000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----------------
+red10
+----------------
+2025-10-17 05:22:32.326366000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-17 12:50:09.781464000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----------------
+red11
+----------------
+2025-10-17 08:36:28.811340000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-17 12:28:13.365452000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-18 03:27:30.603303000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-18 11:10:23.100401000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-19 02:29:58.557997000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+2025-10-19 07:38:50.155410000 CRITC Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+
+
+### Client Nodes
+
+[krajara@lux01 ~]$ for node in `cat /home/krajara/benchmarks/ior/scripts/good_CN.txt`;  do echo $node; echo "-----"; ssh $node "grep 'Internal Error' /var/log/red/client/redfs/redfs.log"; echo "----"; done
+lux01
+-----
+start uringredfs: 2025-10-22 15:58:09: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux02
+-----
+start uringredfs: 2025-10-22 16:27:12: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+start uringredfs: 2025-10-23 13:52:57: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux03
+-----
+start uringredfs: 2025-10-22 16:38:41: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux05
+-----
+start uringredfs: 2025-10-22 13:42:02: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux07
+-----
+start uringredfs: 2025-10-22 13:55:45: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux08
+-----
+----
+lux09
+-----
+----
+lux10
+-----
+----
+lux11
+-----
+start uringredfs: 2025-10-22 17:27:36: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux12
+-----
+start uringredfs: 2025-10-22 17:35:57: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux13
+-----
+start uringredfs: 2025-10-22 17:23:35: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux14
+-----
+start uringredfs: 2025-10-22 17:17:01: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+redfs: 2025-10-22 17:17:03: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux17
+-----
+----
+lux18
+-----
+start uringredfs: 2025-10-22 17:31:33: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux19
+-----
+start uringredfs: 2025-10-23 09:29:46: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-src/util/red_metrics.cpp:703: assertion failed (metadata_offset == value_offset)
+----
+lux20
+-----
+----
+lux21
+-----
+start uringredfs: 2025-10-22 18:05:01: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux22
+-----
+----
+lux23
+-----
+start uringredfs: 2025-10-22 17:46:19: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux24
+-----
+start uringredfs: 2025-10-23 11:12:54: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux25
+-----
+start uringredfs: 2025-10-22 17:42:35: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+start uringredfs: 2025-10-23 16:06:41: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-src/util/red_metrics.cpp:703: assertion failed (metadata_offset == value_offset)
+----
+lux26
+-----
+----
+lux28
+-----
+----
+lux29
+-----
+start uringredfs: 2025-10-23 13:45:03: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux30
+-----
+----
+lux31
+-----
+----
+lux32
+-----
+start uringredfs: 2025-10-22 18:08:16: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux35
+-----
+start uringredfs: 2025-10-22 17:49:15: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux36
+-----
+start uringredfs: 2025-10-22 17:54:46: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+start uringredfs: 2025-10-23 14:21:33: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+start uringredfs: 2025-10-23 21:19:39: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+lux37
+-----
+----
+lux38
+-----
+----
+lux39
+-----
+start uringredfs: 2025-10-22 17:50:34: Internal Error. Contact DDN Service - PANIC@custom-251007.1c92bed9-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS)
+----
+
+
