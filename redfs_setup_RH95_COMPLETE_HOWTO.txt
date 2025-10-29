@@ -1,0 +1,89 @@
+1) Set Proxy
+
+
+2) Verify any prior install
+
+$ rpm -qa | egrep -i 'redcli|red-client|redsetup'
+#Remove any stale packages
+rpm -qa | egrep -i 'redcli|red-client|redsetup' | xargs rpm -e
+
+3) Install the packages
+
+sudo yum update
+sudo yum install -y ~/repo/infinia/rpm/2.3.0-rc1/red*.rpm
+
+4) Verify post install
+$ rpm -qa | egrep -i 'redcli|red-client'
+$ unset_proxies
+
+5) Setup and Mount redfs in client node
+
+# Enable kernel io-uring
+echo 0 > /proc/sys/kernel/io_uring_disabled
+
+$ lsmod | grep redfs
+$ sudo modprobe redfs
+$ lsmod | grep redfs
+redfs                 245760  0
+~$ ls -la /dev/redfs
+crw------- 1 root root 10, 119 Oct 15 20:02 /dev/redfs
+
+$ sudo mkdir -p /redfs
+$ sudo chmod 0777 /redfs
+
+$ unset_proxies
+
+$ export REDCLI_SERVER="https://192.168.2.201:443/redapi/v1"
+~$ redcli user login realm_admin --password abcd --server $REDCLI_SERVER
+8:03PM INF User "realm_admin" logged in successfully.
+
+$ sudo usermod -a -G red root
+
+~$ sudo -E redcli client setup -t red -s red --flavor posix --server $REDCLI_SERVER
+8:03PM INF Auto Selecting cluster: cluster1
+8:03PM WRN With flavor posix, to handle posix daemon redfs which is started by root, redclientagent will be started with root
+8:03PM INF The following network options have been updated on this node:
+            net.ipv4.tcp_rmem=4096 131072 8388608
+            net.ipv4.tcp_wmem=4096 131072 8388608
+            net.core.wmem_max=8388608
+            net.core.rmem_max=8388608
+8:03PM INF Realm node: false
+8:03PM INF Certificates and keys saved at "/etc/red/certs". Be careful!
+8:03PM INF Created link /home/nodeadmin/.config/red/default for redrc /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf
+8:03PM INF Created link /home/nodeadmin/.config/red/redrc for redrc /home/nodeadmin/.config/red/default/redrc
+8:03PM INF Setting up redclientagent systemd service
+8:03PM INF Starting redclientagent systemd service with user root, group root, types -t posix
+8:03PM INF RED client environment setup complete, Hint: run 'source /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc' to set RED environment
+
+
+#Edit $HOME/.config/red/redrc
+Change IP Subnet 192.168.192/24 --> 192.168.3/24 (Since Client can only communicate over 192.168.3)
+
+#Verify that 192.168.3 is in effect
+$ sudo grep '192.168' $HOME/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc
+
+$ source $HOME/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc
+
+echo $RED_USER
+
+#Create a file with REDFS Tunings
+$ sudo cat /etc/red/redfs/redfs_user.env
+export RED_WORKLOAD=5
+export RED_CLIENT_NET_CPUSET="[0-1,64-65,32-33,96-97]"
+export RED_FS_COREMASK="[0-127]"
+
+$ sudo mount -t redfs -o conf_file=/etc/red/redfs/redfs_user.env redfs /redfs
+
+$ ls /redfs
+
+$ mount | grep redfs
+cluster1:red/red/redfs on /redfs type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+
+8) Verify /redfs
+
+$ echo "Greetings from `hostname` at `date`" >> /redfs/greetings.txt
+$ cat /redfs/greetings.txt 
+
+9) Verify the RED_CLIENT CPUSET tuning
+
+$ ps -eLo pid,tid,psr,pcpu,stat,comm | grep reactor
