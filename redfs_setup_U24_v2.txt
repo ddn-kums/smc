@@ -62,7 +62,7 @@ $ redcli s3 bucket list -t red
 
 5. Create POSIX dataset
 
-nodeadmin@srt013:~$ redcli dataset create redfs --flavor posix -x '{"bucket_size":2097152}'
+nodeadmin@srt013:~$ redcli dataset create redfs --flavor posix -x '{"bucket_size":2097152,"compression":0}'
 3:36PM INF Auto Selecting cluster: cluster1
 3:36PM INF Auto Selecting tenant: red
 3:36PM INF Auto Selecting subtenant: red
@@ -114,228 +114,30 @@ Client Setup
 
 Refer to /work/kums/red/scripts/red_setup_snl/docs/old/redfs_setup_U24_quick_HOWTO.txt for details
 
-$ hostname
-srt018
-
-1. Install the packages
-
-$ dpkg -l | egrep -i 'redcli|red-client'
-
-# Remove any old packages
-sudo apt-get purge -y redcli
-
-#Install the latest package
-$ sudo apt-get install -y /work/kums/repo/infinia/deb/2.3.0-rc1/red*.deb
-
-$ dpkg -l | egrep -i 'redcli|red-client'
-ii  red-client-common                      2.3.0~rc1                               amd64        RED common libraries and binaries
-ii  red-client-fs                          2.3.0~rc1                               amd64        RED POSIX filesystem client
-ii  red-client-fs-dkms                     0.0.16                                  all          Kernel module that enables you to mount redfs
-ii  red-client-tools                       2.3.0~rc1                               amd64        RED client tools and libraries.
-ii  redcli                                 2.3.0~rc1                               amd64        RED command line interface
-
-2. Load and verify the module load
-
-nodeadmin@srt018:~$ sudo lsmod | grep redfs
-nodeadmin@srt018:~$ sudo modprobe redfs
-nodeadmin@srt018:~$ sudo lsmod | grep redfs
-redfs                 249856  0
-nodeadmin@srt018:~$ ls -la /dev/redfs
-crw------- 1 root root 10, 119 Oct 15 15:58 /dev/redfs
-
-3. Login to Infinia from the client
-
-nodeadmin@srt018:~$ export REDCLI_SERVER="https://10.36.7.113:443/redapi/v1"
-nodeadmin@srt018:~$ echo $REDCLI_SERVER
-https://10.36.7.113:443/redapi/v1
-nodeadmin@srt018:~$ sudo redcli user login realm_admin --password DDN1nfini@R0cks! --server $REDCLI_SERVER
-4:05PM INF User "realm_admin" logged in successfully.
-
-nodeadmin@srt018:~$ sudo usermod -a -G red root
-nodeadmin@srt018:~$ sudo -E redcli client setup -t red -s red --flavor posix --server $REDCLI_SERVER
-4:08PM INF Auto Selecting cluster: cluster1
-4:08PM WRN With flavor posix, to handle posix daemon redfs which is started by root, redclientagent will be started with root
-4:08PM INF The following network options have been updated on this node: 
-            net.ipv4.tcp_rmem=4096 131072 8388608
-            net.ipv4.tcp_wmem=4096 131072 8388608
-            net.core.wmem_max=8388608
-            net.core.rmem_max=8388608
-4:08PM INF Realm node: false
-4:08PM INF Certificates and keys saved at "/etc/red/certs". Be careful!
-4:08PM INF Created link /root/.config/red/default for redrc /root/.config/red/669e81f4-9401-4173-806d-eb0147e411cf
-4:08PM INF Created link /root/.config/red/redrc for redrc /root/.config/red/default/redrc
-4:08PM INF Setting up redclientagent systemd service
-4:08PM INF Starting redclientagent systemd service with user root, group root, types -t posix
-4:08PM INF RED client environment setup complete, Hint: run 'source /root/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc' to set RED environment
-
-CLARIFICATION: Does above need to be run as root?
-YES, we need to run as root
-nodeadmin@srt017:~$ redcli client setup -t red -s red --flavor posix --server $REDCLI_SERVER
-6:52PM INF Auto Selecting cluster: cluster1
-6:52PM FTL You must run as root for any flavor, try this command with "sudo -E" again
-
-Do we need to source to set RED environment
-
-Proceed with source and continue
-
-nodeadmin@srt018:~$ sudo su
-root@srt018:/home/nodeadmin# cd
-root@srt018:~# echo $RED_USER
-
-root@srt018:~# source /root/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc
-4:17PM INF Auto Selecting cluster: cluster1
-root@srt018:~# echo $RED_USER
-0df59d07-632e-4833-b04e-376d28b9aeb7
-
-#Create Mount Pt
-root@srt018:~# sudo mkdir -p /mnt/redfs
-
-#Set Client Side Tunings
-#Before
-root@srt018:~# cat ~/.config/red/redrc | egrep 'CPUSET|COREMASK|WIDTH|WORKLOAD'
-root@srt018:~# echo $RED_FS_COREMASK
-
-root@srt018:~# echo "export RED_WORKLOAD=5" >> ~/.config/red/redrc
-root@srt018:~# echo "export RED_WIDTH=64" >> ~/.config/red/redrc
-root@srt018:~# echo "export RED_CLIENT_NET_CPUSET=[0-4,8-11]" >> ~/.config/red/redrc
-root@srt018:~# echo "export RED_FS_COREMASK=[0-4,8-11]" >> ~/.config/red/redrc
-root@srt018:~# source ~/.config/red/redrc
-4:39PM INF Auto Selecting cluster: cluster1
-root@srt018:~# cat ~/.config/red/redrc | egrep 'CPUSET|COREMASK|WIDTH|WORKLOAD'
-export RED_WORKLOAD=5
-export RED_WIDTH=64
-export RED_CLIENT_NET_CPUSET=[0-4,8-11]
-export RED_FS_COREMASK=[0-4,8-11]
-root@srt018:~# echo $RED_WORKLOAD
-5
-root@srt018:~# echo $RED_FS_COREMASK
-[0-4,8-11]
-root@srt018:~# echo $RED_CLIENT_NET_CPUSET
-[0-4,8-11]
-
-nodeadmin@srt018:~$ sudo mkdir /etc/red/redfs
-nodeadmin@srt018:~$ sudo vi /etc/red/redfs/redfs_user.env
-nodeadmin@srt018:~$ sudo cat /etc/red/redfs/redfs_user.env
-export RED_WORKLOAD=5
-export RED_WIDTH=64
-export RED_CLIENT_NET_CPUSET=[0-4,8-11]
-export RED_FS_COREMASK=[0-4,8-11]
-
-
-root@srt018:~# sudo mount -t redfs -o /etc/red/redfs/redfs_user.env redfs /mnt/redfs
-fuse: unknown option(s): `-o /etc/red/redfs/redfs_user.env'
-ERROR: redfs_session_new failed
-
-root@srt018:~# sudo mount -t redfs redfs /mnt/redfs
-
-root@srt018:~# mount | grep redfs
-cluster1:red/red/redfs on /mnt/redfs type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
-root@srt018:~# echo "Greetings from `hostname` at `date`" >> /mnt/redfs/greetings.txt
-root@srt018:~# cat /mnt/redfs/greetings.txt 
-Greetings from srt018 at Wed Oct 15 04:48:43 PM UTC 2025
-
-root@srt018:~# df -h | grep redfs
-cluster1:red/red/redfs              81T     0   81T   0% /mnt/redfs
-
-redfs log files:  /var/log/red/client/mnt_redfs/redfs.log
-
-
-### Another client setup in srt017
-
-#Install the RPMs and load the kernel module
-
-nodeadmin@srt017:~$ sudo lsmod | grep redfs
-redfs                 249856  0
-nodeadmin@srt017:~$ ls -la /dev/redfs
-crw------- 1 root root 10, 119 Oct 15 18:51 /dev/redfs
-
-nodeadmin@srt017:~$ export REDCLI_SERVER="https://10.36.7.113:443/redapi/v1"
-nodeadmin@srt017:~$ echo $REDCLI_SERVER
-https://10.36.7.113:443/redapi/v1
-
-
-nodeadmin@srt017:~$ redcli user login realm_admin --password DDN1nfini@R0cks! --server $REDCLI_SERVER
-6:52PM INF User "realm_admin" logged in successfully.
-
-nodeadmin@srt017:~$ sudo usermod -a -G red root
-nodeadmin@srt017:~$ sudo -E redcli client setup -t red -s red --flavor posix --server $REDCLI_SERVER
-6:56PM INF Auto Selecting cluster: cluster1
-6:56PM WRN With flavor posix, to handle posix daemon redfs which is started by root, redclientagent will be started with root
-6:56PM INF The following network options have been updated on this node: 
-            net.ipv4.tcp_rmem=4096 131072 8388608
-            net.ipv4.tcp_wmem=4096 131072 8388608
-            net.core.wmem_max=8388608
-            net.core.rmem_max=8388608
-6:56PM INF Realm node: false
-6:56PM INF Certificates and keys saved at "/etc/red/certs". Be careful!
-6:56PM INF Created link /home/nodeadmin/.config/red/default for redrc /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf
-6:56PM INF Created link /home/nodeadmin/.config/red/redrc for redrc /home/nodeadmin/.config/red/default/redrc
-6:56PM INF Setting up redclientagent systemd service
-6:56PM INF Starting redclientagent systemd service with user root, group root, types -t posix
-6:56PM INF RED client environment setup complete, Hint: run 'source /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc' to set RED environment
-
-nodeadmin@srt017:~$ ls -l /home/nodeadmin/.config/red/
-total 12
-drwx------ 3 nodeadmin nodeadmin 4096 Oct 15 18:56 669e81f4-9401-4173-806d-eb0147e411cf
-lrwxrwxrwx 1 nodeadmin nodeadmin   16 Jun 18 21:30 auth_token.jwt -> tokens/admin.jwt
-lrwxrwxrwx 1 root      root        64 Oct 15 18:56 default -> /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf
-lrwxrwxrwx 1 root      root        41 Oct 15 18:56 redrc -> /home/nodeadmin/.config/red/default/redrc
-drwx------ 2 nodeadmin nodeadmin 4096 Jun 18 21:30 tokens
-
-nodeadmin@srt017:~$ echo $RED_USER
-
-nodeadmin@srt017:~$ source /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc
-6:59PM INF Auto Selecting cluster: cluster1
-nodeadmin@srt017:~$ echo $RED_USER
-0df59d07-632e-4833-b04e-376d28b9aeb7
-
-
-## Create Mount-point
-nodeadmin@srt017:~$ sudo mkdir -p /mnt/redfs
-
-## Apply Client-Side Tuning
-nodeadmin@srt017:~$ echo "export RED_WORKLOAD=5" >> ~/.config/red/redrc
-nodeadmin@srt017:~$ echo "export RED_WIDTH=64" >> ~/.config/red/redrc
-nodeadmin@srt017:~$ echo "export RED_CLIENT_NET_CPUSET=\"[0-4,8-11]\"" >> ~/.config/red/redrc
-nodeadmin@srt017:~$ echo "export RED_FS_COREMASK=\"[0-4,8-11]\"" >> ~/.config/red/redrc
-
-nodeadmin@srt017:~$ cat ~/.config/red/redrc | egrep 'CPUSET|COREMASK|WIDTH|WORKLOAD'
-export RED_WORKLOAD=5
-export RED_WIDTH=64
-export RED_CLIENT_NET_CPUSET="[0-4,8-11]"
-export RED_FS_COREMASK="[0-4,8-11]"
-
-nodeadmin@srt017:~$ sudo mount -t redfs -o conf_file=/etc/red/redfs/redfs_user.env redfs /mnt/redfs
-nodeadmin@srt017:~$ df -h | grep redfs
-cluster1:red/red/redfs              81T     0   81T   0% /mnt/redfs
-
-nodeadmin@srt017:~$ mount | grep redfs
-cluster1:red/red/redfs on /mnt/redfs type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
-nodeadmin@srt017:~$ sudo cat /mnt/redfs/greetings.txt 
-Greetings from srt018 at Wed Oct 15 04:48:43 PM UTC 2025
-nodeadmin@srt017:~$ echo "Greetings from `hostname` at `date`" >> /mnt/redfs/greetings.txt
-nodeadmin@srt017:~$ cat /mnt/redfs/greetings.txt 
-Greetings from srt018 at Wed Oct 15 04:48:43 PM UTC 2025
-Greetings from srt017 at Wed Oct 15 07:14:44 PM UTC 2025
-nodeadmin@srt017:~$ df -h | grep redfs
-cluster1:red/red/redfs              81T     0   81T   0% /mnt/redfs
-
-
-### Another attempt on srt015
-
 nodeadmin@srt015:~$ dpkg -l | egrep -i 'redcli|red-client'
+
+sudo apt-get update
 
 nodeadmin@srt015:~$ sudo apt-get purge -y redcli
 
-nodeadmin@srt015:~$ sudo apt-get install -y /work/kums/repo/infinia/deb/2.3.0-rc1/red*.deb
-
+nodeadmin@srt015:~$ sudo apt-get install -y /work/kums/repo/infinia/deb/2.3.0-rc5/red*.deb
 
 nodeadmin@srt015:~$ dpkg -l | egrep -i 'redcli|red-client'
-ii  red-client-common                      2.3.0~rc1                               amd64        RED common libraries and binaries
-ii  red-client-fs                          2.3.0~rc1                               amd64        RED POSIX filesystem client
-ii  red-client-fs-dkms                     0.0.16                                  all          Kernel module that enables you to mount redfs
-ii  red-client-tools                       2.3.0~rc1                               amd64        RED client tools and libraries.
-ii  redcli                                 2.3.0~rc1                               amd64        RED command line interface
+ii  red-client-common                      2.3.0~rc5                               amd64        RED common libraries and binaries
+ii  red-client-fs                          2.3.0~rc5                               amd64        RED POSIX filesystem client
+ii  red-client-fs-dkms                     2.3.0~rc5                               all          Kernel module that enables you to mount redfs
+ii  red-client-tools                       2.3.0~rc5                               amd64        RED client tools and libraries.
+ii  redcli                                 2.3.0~rc5                               amd64        RED command line interface
+
+nodeadmin@srt015:~$ sudo apt list --installed | egrep 'redcli|red-client'
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+red-client-common/now 2.3.0~rc5 amd64 [installed,local]
+red-client-fs-dkms/now 2.3.0~rc5 all [installed,local]
+red-client-fs/now 2.3.0~rc5 amd64 [installed,local]
+red-client-tools/now 2.3.0~rc5 amd64 [installed,local]
+redcli/now 2.3.0~rc5 amd64 [installed,local]
 
 nodeadmin@srt015:~$ sudo lsmod | grep redfs
 nodeadmin@srt015:~$ sudo modprobe redfs
@@ -343,41 +145,32 @@ nodeadmin@srt015:~$ sudo lsmod | grep redfs
 redfs                 249856  0
 
 nodeadmin@srt015:~$ ls -la /dev/redfs
-crw------- 1 root root 10, 119 Oct 15 20:02 /dev/redfs
-
-nodeadmin@srt015:~$ export REDCLI_SERVER="https://10.36.7.113:443/redapi/v1"
+crw------- 1 root root 10, 119 Dec  4 22:35 /dev/redfs
+nodeadmin@srt015:~$ export REDCLI_SERVER="https://10.36.7.124:443/redapi/v1"
 nodeadmin@srt015:~$ echo $REDCLI_SERVER
-https://10.36.7.113:443/redapi/v1
+https://10.36.7.124:443/redapi/v1
 
 nodeadmin@srt015:~$ redcli user login realm_admin --password DDN1nfini@R0cks! --server $REDCLI_SERVER
 8:03PM INF User "realm_admin" logged in successfully.
 nodeadmin@srt015:~$ sudo usermod -a -G red root
 
 nodeadmin@srt015:~$ sudo -E redcli client setup -t red -s red --flavor posix --server $REDCLI_SERVER
-8:03PM INF Auto Selecting cluster: cluster1
-8:03PM WRN With flavor posix, to handle posix daemon redfs which is started by root, redclientagent will be started with root
-8:03PM INF The following network options have been updated on this node: 
-            net.ipv4.tcp_rmem=4096 131072 8388608
-            net.ipv4.tcp_wmem=4096 131072 8388608
-            net.core.wmem_max=8388608
-            net.core.rmem_max=8388608
-8:03PM INF Realm node: false
-8:03PM INF Certificates and keys saved at "/etc/red/certs". Be careful!
-8:03PM INF Created link /home/nodeadmin/.config/red/default for redrc /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf
-8:03PM INF Created link /home/nodeadmin/.config/red/redrc for redrc /home/nodeadmin/.config/red/default/redrc
-8:03PM INF Setting up redclientagent systemd service
-8:03PM INF Starting redclientagent systemd service with user root, group root, types -t posix
-8:03PM INF RED client environment setup complete, Hint: run 'source /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc' to set RED environment
-
+10:38PM INF Auto selecting cluster: cluster1
+10:38PM WRN With flavor posix, to handle posix daemon redfs which is started by root, redclientagent will be started with root
+10:38PM INF Realm node: false
+10:38PM INF Certificates and keys saved at "/etc/red/certs". Be careful!
+10:38PM INF Created link /home/nodeadmin/.config/red/default for /home/nodeadmin/.config/red/1f0901e4-6a22-4cdb-9f68-a5fc64848ee2
+10:38PM INF Created link /home/nodeadmin/.config/red/redrc for redrc /home/nodeadmin/.config/red/default/redrc
+10:38PM INF Setting up redclientagent systemd service
+10:38PM INF Starting redclientagent systemd service with user root, group root, types -t posix
+10:38PM INF Successfully created config file /etc/sysctl.d/99-zzred-posix.conf to enable io_uring
+10:38PM INF RED client environment setup complete, Hint: run 'source /home/nodeadmin/.config/red/1f0901e4-6a22-4cdb-9f68-a5fc64848ee2/redrc' to set RED environment
 
 nodeadmin@srt015:~$ ls -l /home/nodeadmin/.config/red/
-total 12
-drwx------ 3 nodeadmin nodeadmin 4096 Oct 15 20:03 669e81f4-9401-4173-806d-eb0147e411cf
-lrwxrwxrwx 1 nodeadmin nodeadmin   16 Jun 18 21:30 auth_token.jwt -> tokens/admin.jwt
-lrwxrwxrwx 1 root      root        64 Oct 15 20:03 default -> /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf
-lrwxrwxrwx 1 root      root        41 Oct 15 20:03 redrc -> /home/nodeadmin/.config/red/default/redrc
-drwx------ 2 nodeadmin nodeadmin 4096 Jun 18 21:30 tokens
-
+total 8
+drwx------ 3 nodeadmin nodeadmin 4096 Dec  4 22:38 1f0901e4-6a22-4cdb-9f68-a5fc64848ee2
+lrwxrwxrwx 1 nodeadmin nodeadmin   64 Dec  4 22:38 default -> /home/nodeadmin/.config/red/1f0901e4-6a22-4cdb-9f68-a5fc64848ee2
+lrwxrwxrwx 1 nodeadmin nodeadmin   41 Dec  4 22:38 redrc -> /home/nodeadmin/.config/red/default/redrc
 
 ## For SNL
 
@@ -390,28 +183,203 @@ export RED_STREAM=192.168.7.113
 
 ##
 
-nodeadmin@srt015:~$ source /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc
-8:03PM INF Auto Selecting cluster: cluster1
+nodeadmin@srt015:~$ source /home/nodeadmin/.config/red/1f0901e4-6a22-4cdb-9f68-a5fc64848ee2/redrc
+10:39PM INF Auto selecting cluster: cluster1
+
+nodeadmin@srt015:~$ echo $RED_USER
+df6e3fb1-1545-40de-8699-40c272af9c2d
 
 nodeadmin@srt015:~$ sudo mkdir -p /mnt/redfs
-nodeadmin@srt015:~$ sudo mkdir /etc/red/redfs
 nodeadmin@srt015:~$ sudo vi /etc/red/redfs/redfs_user.env
 
 nodeadmin@srt015:~$ sudo cat /etc/red/redfs/redfs_user.env
-export RED_WORKLOAD=5
-export RED_WIDTH=64
-export RED_CLIENT_NET_CPUSET="[0-4,8-11]"
-export RED_FS_COREMASK="[0-4,8-11]"
+# This value can hold persistent admin config values,
+# which are used when mounting redfs
+# config value can be set in the format
+#KEY=value
+RED_WORKLOAD=5
+RED_CLIENT_NET_CPUSET="[0-4,8-11]"
+RED_FS_COREMASK="[0-47]"
 
-nodeadmin@srt015:~$ sudo mount -t redfs -o conf_file=/etc/red/redfs/redfs_user.env redfs /mnt/redfs
-
+nodeadmin@srt015:~$ sudo mount -t redfs redfs /mnt/redfs
+Cannot open trace events file /opt/ddn/red/red_sysadmin_events.json, unable to open /opt/ddn/red/red_sysadmin_events.json: No such file or directory
+2025-12-04 22:49:40.712819000 WARNG SLOW ALLOCATION - f:malloc n:8192 t:209mS
+2025-12-04 22:49:40.817969000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:124mS
+2025-12-04 22:49:41.020589000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:195mS
+2025-12-04 22:49:41.150928000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:112mS
 nodeadmin@srt015:~$ df -h | grep redfs
 cluster1:red/red/redfs              81T     0   81T   0% /mnt/redfs
-
 nodeadmin@srt015:~$ echo "Greetings from `hostname` at `date`" >> /mnt/redfs/greetings.txt
-nodeadmin@srt015:~$ cat /mnt/redfs/greetings.txt 
-Greetings from srt018 at Wed Oct 15 04:48:43 PM UTC 2025
-Greetings from srt017 at Wed Oct 15 07:14:44 PM UTC 2025
-Greetings from srt015 at Wed Oct 15 08:08:36 PM UTC 2025
+nodeadmin@srt015:~$ cat /mnt/redfs/greetings.txt
+Greetings from srt015 at Thu Dec  4 10:50:14 PM UTC 2025
 
 
+## Verify the RED_CLIENT CPUSET tuning
+nodeadmin@srt014:~$ ps -eLo pid,tid,psr,pcpu,stat,comm | grep reactor | tail -5
+2754170 2754241  43  0.5 SLsl clt_reactor_43
+2754170 2754242  44  0.4 SLsl clt_reactor_44
+2754170 2754243  45  0.4 SLsl clt_reactor_45
+2754170 2754244  46  0.5 SLsl clt_reactor_46
+2754170 2754245  47  0.4 SLsl clt_reactor_47
+nodeadmin@srt014:~$ ps -eLo pid,tid,psr,pcpu,stat,comm | grep reactor | wc -l
+48
+
+
+#### With SKIP-IO Enabled
+
+Server:
+
+https://ime-ddn.atlassian.net/wiki/spaces/RED/pages/1591280321/Benchmarking+with+SKIP-IO
+
+nodeadmin@srt024:~$ redcli dataset create dataloss-scratch --flavor posix -x '{"bucket_size":2097152,"compression":0,"skip_io_flags":"task,cat,eb_nometa,eb_noebc,eb_noref,bucket_write"}'
+3:57PM INF Auto selecting cluster: cluster1
+3:57PM INF Auto selecting tenant: red
+3:57PM INF Auto selecting subtenant: red
+3:57PM INF Successfully created dataset: dataloss-scratch with profile SYSTEM_DATA_1
+nodeadmin@srt024:~$ 
+nodeadmin@srt024:~$ redcli dataset list
+3:58PM INF Auto selecting cluster: cluster1
+3:58PM INF Set limit to 25.
+┌──────────────────┬────────┬───────────┬──────────┬───────┬──────────┬───────────────┐
+│       NAME       │ TENANT │ SUBTENANT │ SERVICES │ OWNER │   QUOTA  │     USAGE     │
+├──────────────────┼────────┼───────────┼──────────┼───────┼──────────┼───────────────┤
+│          bucket1 │    red │       red │          │       │        - │ 7.136 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       │          ├───────────────┤
+│          bucket2 │    red │       red │          │       │          │ 7.136 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       │          ├───────────────┤
+│          bucket3 │    red │       red │          │       │          │   7.2 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       ├──────────┼───────────────┤
+│ dataloss-scratch │    red │       red │          │       │ 88.39 TB │ 2.464 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       │          ├───────────────┤
+│              red │    red │       red │          │       │          │ 2.368 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       │          ├───────────────┤
+│            redfs │    red │       red │          │       │          │ 2.737 TB (3%) │
+└──────────────────┴────────┴───────────┴──────────┴───────┴──────────┴───────────────┘
+nodeadmin@srt024:~$ redcli dataset show dataloss-scratch
+3:58PM INF Auto selecting cluster: cluster1
+3:58PM INF Auto selecting tenant: red
+3:58PM INF Auto selecting subtenant: red
+┌──────────────────┬─────┬────────┬───────────────┬────────┬──────────┬───────────────┬───────────────┬─────────────┬───────────────────────────────────────────────────────────────────┐
+│       NAME       │  ID │ FLAVOR │    PROFILE    │  POOL  │   QUOTA  │     USAGE     │ FILES/VOLUMES │ DIRECTORIES │                               XATTRS                              │
+│                  │     │        │               │        │          │               │               │             ├───────────────┬───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │      KEY      │                       VALUE                       │
+├──────────────────┼─────┼────────┼───────────────┼────────┼──────────┼───────────────┼───────────────┼─────────────┼───────────────┼───────────────────────────────────────────────────┤
+│ dataloss-scratch │ 317 │  posix │ SYSTEM_DATA_1 │ SYSTEM │ 88.39 TB │ 2.464 kB (0%) │             0 │           1 │    block_size │                                             4 kiB │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │   bucket_size │                                             2 MiB │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │   compression │                                                 0 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │  dir_nstripes │                                                32 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │    dp_profile │                                                 1 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │    ec_nparity │                                                 3 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │ skip_io_flags │ task,cat,eb_nometa,eb_noebc,eb_noref,bucket_write │
+└──────────────────┴─────┴────────┴───────────────┴────────┴──────────┴───────────────┴───────────────┴─────────────┴───────────────┴───────────────────────────────────────────────────┘
+
+
+Client setup
+
+nodeadmin@srt014:~$ mkdir /mnt/scratchfs_dataloss
+mkdir: cannot create directory ‘/mnt/scratchfs_dataloss’: Permission denied
+nodeadmin@srt014:~$ sudo mkdir /mnt/scratchfs_dataloss
+nodeadmin@srt014:~$ sudo mount -t redfs dataloss-scratch /mnt/scratchfs_dataloss
+
+nodeadmin@srt014:~$ mount | grep dataloss
+cluster1:red/red/dataloss-scratch on /mnt/scratchfs_dataloss type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+nodeadmin@srt014:~$ df -h | grep dataloss
+cluster1:red/red/dataloss-scratch   81T     0   81T   0% /mnt/scratchfs_dataloss
+
+## Empty file
+nodeadmin@srt014:~$ ls /mnt/scratchfs_dataloss/
+nodeadmin@srt014:~$ echo "Greetings from `hostname` at `date`" >> /mnt/scratchfs_dataloss/greetings.txt
+nodeadmin@srt014:~$ ls /mnt/scratchfs_dataloss/
+greetings.txt
+nodeadmin@srt014:~$ cat /mnt/scratchfs_dataloss/greetings.txt 
+nodeadmin@srt014:~$ ls -lh /mnt/scratchfs_dataloss/
+total 0
+-rw-rw---- 1 nodeadmin nodeadmin 0 Jan  1  1970 greetings.txt
+nodeadmin@srt014:~$ stat /mnt/scratchfs_dataloss/greetings.txt 
+  File: /mnt/scratchfs_dataloss/greetings.txt
+  Size: 0         	Blocks: 0          IO Block: 4096   regular empty file
+Device: 0,53	Inode: 65          Links: 1
+Access: (0660/-rw-rw----)  Uid: ( 1000/nodeadmin)   Gid: ( 1000/nodeadmin)
+Access: 1970-01-01 00:00:00.000000000 +0000
+Modify: 1970-01-01 00:00:00.000000000 +0000
+Change: 2025-12-10 16:06:06.476595282 +0000
+ Birth: -
+
+Mount in another client node
+
+nodeadmin@srt015:~$ sudo mkdir /mnt/scratchfs_dataloss
+nodeadmin@srt015:~$ sudo mount -t redfs dataloss-scratch /mnt/scratchfs_dataloss
+Cannot open trace events file /opt/ddn/red/red_sysadmin_events.json, unable to open /opt/ddn/red/red_sysadmin_events.json: No such file or directory
+2025-12-10 16:11:16.542429000 WARNG SLOW ALLOCATION - f:malloc n:8192 t:165mS
+2025-12-10 16:11:16.838122000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:176mS
+2025-12-10 16:11:16.838129000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:100mS
+2025-12-10 16:11:16.908536000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:147mS
+2025-12-10 16:11:16.908529000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:111mS
+2025-12-10 16:11:16.908528000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:147mS
+2025-12-10 16:11:16.908573000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:111mS
+nodeadmin@srt015:~$ mount | grep dataloss
+cluster1:red/red/dataloss-scratch on /mnt/scratchfs_dataloss type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+nodeadmin@srt015:~$ df -h | grep dataloss
+cluster1:red/red/dataloss-scratch   81T     0   81T   0% /mnt/scratchfs_dataloss
+nodeadmin@srt015:~$ ls /mnt/scratchfs_dataloss/
+greetings.txt
+
+nodeadmin@srt015:~$ echo "Greetings from `hostname` at `date`" >> /mnt/scratchfs_dataloss/greetings.txt
+nodeadmin@srt015:~$ ls -lh /mnt/scratchfs_dataloss/
+total 0
+-rw-rw---- 1 nodeadmin nodeadmin 0 Jan  1  1970 greetings.txt
+
+
+## To run redfs_bench_tool
+
+/opt/ddn/red/bin/redfs_bench_tool --help
+
+Script is in:
+
+$ pwd
+/work/kums/red/redfs/scripts
+
+$ ls -1
+all_client_nodes.tmp
+all_client_nodes.txt
+pred_redfs_perf.sh
+
+## Issue
+
+nodeadmin@srt018:~$ mount | grep redfs
+cluster1:red/red/redfs on /mnt/redfs type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+nodeadmin@srt018:~$ ls /mnt/redfs/
+ls: cannot open directory '/mnt/redfs/': Transport endpoint is not connected
+
+nodeadmin@srt018:~$ sudo umount -f /mnt/redfs 
+nodeadmin@srt018:~$ sudo mount -t redfs -o conf_file=/etc/red/redfs/redfs_user.env redfs /mnt/redfs
+nodeadmin@srt018:~$ mount | grep redfs
+cluster1:red/red/redfs on /mnt/redfs type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+nodeadmin@srt018:~$ ls /mnt/redfs/
+greetings.txt
+
+## log files
+
+root@srt018:/var/log/red/client/mnt_redfs# pwd
+/var/log/red/client/mnt_redfs
+
+root@srt018:/var/log/red/client/mnt_redfs# ls -l redfs.log 
+-rw------- 1 root nodeadmin 934595 Oct 30 15:37 redfs.log
+
+root@srt018:/var/log/red/client/mnt_redfs# tail -2 redfs.log 
+2025-10-30 15:37:37.583134417 0x0 548565  2 0 src/rpc2/net_endpt.cpp:810 Connection establishment from device rocep65s0f0 (sockaddr_in://192.168.8.118) to peer 1 (sockaddr_in://192.168.8.113) timed out
+2025-10-30 15:37:37.583360555 0x0 548566  3 0 src/rpc2/net_endpt.cpp:810 Connection establishment from device rocep65s0f0 (sockaddr_in://192.168.8.118) to peer 1 (sockaddr_in://192.168.8.113) timed out
+
+root@srt018:/var/log/red/client/mnt_redfs# cat redfs.log | egrep 'CRITC|Internal'
+redfs: 2025-10-29 18:26:19: Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS) 
+2025-10-29 18:26:26.690461000 CRITC Halt - PANIC
+
+## Slack thread
+cust-sandia: Mon Oct13
+https://ime-dev.slack.com/archives/C09BP8XJX5G/p1760377498302459
