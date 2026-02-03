@@ -1,0 +1,692 @@
+
+
+Reference: https://ime-ddn.atlassian.net/wiki/spaces/RED/pages/1863090255/Infinia+POSIX+Client+User+Scenarios+Example+Guide
+YongZe Tuning: https://ime-ddn.atlassian.net/wiki/spaces/RED/pages/2382627525/REDFS+POSIX+Tuning+Guide
+
+Storage Server
+--------------
+
+
+$ pwd
+/work/kums/red/scripts/red_setup_snl/setup
+
+$ grep '2.3.0' *.sh
+download_redsetup.sh:export RED_VER="2.3.0-rc5"
+local_repo_setup.sh:export RED_VER="2.3.0-rcx.7"
+setup.sh:export RED_VER="2.3.0-rc6"
+
+0. Verify huge page in effect
+
+nodeadmin@srt024:~$ pdsh -w srt[019-024] "sudo hugeadm --pool-list" | dshbak -c
+srt024: libhugetlbfs: ERROR: Line too long when parsing mounts
+----------------
+srt[019-024]
+----------------
+      Size  Minimum  Current  Maximum  Default
+   2097152        0        0        0         
+1073741824      110      110      110        *
+
+
+
+1. Create cluster 
+
+Proceed until
+/work/kums/red/scripts/red_setup_snl/setup/cluster_setup.sh
+
+nodeadmin@srt023:~$ redcli cluster show --status
+8:55PM INF Auto selecting cluster: cluster1
+8:55PM INF Set limit to 25.
+┌──────────┬─────────┬────────┬─────────────┬─────────────┬─────────┬─────┬─────┬─────┬─────┬────────────┬─────────┬──────────────┬───────────────┬──────────────┐
+│   NAME   │  STATE  │ LEADER │   FEATURE   │   RUNTIME   │ CLUSTER │ CSE │ SCE │ CCE │ RDE │ #INSTANCES │ #DRIVES │ NET CAPACITY │     %USAGE    │ PROVISIONING │
+│          │         │        │   VERSION   │    CONFIG   │  UPTIME │     │     │     │     │            │         │              │               │     RATIO    │
+├──────────┼─────────┼────────┼─────────────┼─────────────┼─────────┼─────┼─────┼─────┼─────┼────────────┼─────────┼──────────────┼───────────────┼──────────────┤
+│ cluster1 │ running │ srt023 │ 2.3.0-rcx.7 │ auto_config │  02m13s │  15 │  15 │  15 │  11 │          1 │      12 │     88.39 TB │ 391.4 MB (0%) │         1.00 │
+└──────────┴─────────┴────────┴─────────────┴─────────────┴─────────┴─────┴─────┴─────┴─────┴────────────┴─────────┴──────────────┴───────────────┴──────────────┘
+┌─────────────┬──────────┬───────────────┬──────────┬──────────┬──────────────────────────────────────┬─────────────┬──────────┬────────────────┐
+│ INSTANCE ID │ HOSTNAME │ INSTANCE TYPE │   HOST   │ INSTANCE │             INSTANCE UUID            │  SW VERSION │ LIVENESS │ INSTANCE STATE │
+│             │          │               │  UPTIME  │  UPTIME  │                                      │             │          │                │
+├─────────────┼──────────┼───────────────┼──────────┼──────────┼──────────────────────────────────────┼─────────────┼──────────┼────────────────┤
+│           1 │   srt023 │    GOSHAWK-12 │ 0d00h09m │   02m15s │ 11293abe-5362-4760-922f-445580bd172f │ 2.3.0-rcx.7 │  present │ Joined, Leader │
+└─────────────┴──────────┴───────────────┴──────────┴──────────┴──────────────────────────────────────┴─────────────┴──────────┴────────────────┘
+
+
+$ date; redcli cluster show --health
+Tue Jan  6 06:36:21 PM UTC 2026
+6:36PM INF Auto selecting cluster: cluster1
+6:36PM INF Set limit to 25.
+┌──────────────────────────────────────────────────────────────────────────────┬───────────────────────────────────────────────────┐
+│                                    CLUSTER                                   │                     INSTANCES                     │
+├─────────┬────────┬─────────────┬─────────────┬───────┬─────┬─────┬─────┬─────┼───────┬────────┬────────┬─────────┬──────┬────────┤
+│  STATE  │ LEADER │   FEATURE   │   RUNTIME   │ EPOCH │ SCE │ CCE │ RDE │ EDE │ Valid │ Joined │ Replay │ Evicted │ Left │ Failed │
+│         │        │   VERSION   │    CONFIG   │       │     │     │     │     │       │        │        │         │      │        │
+├─────────┼────────┼─────────────┼─────────────┼───────┼─────┼─────┼─────┼─────┼───────┼────────┼────────┼─────────┼──────┼────────┤
+│ running │ srt023 │ 2.3.0-rcx.7 │ auto_config │    15 │  16 │  16 │  11 │   0 │     1 │      1 │      0 │       0 │    0 │      0 │
+└─────────┴────────┴─────────────┴─────────────┴───────┴─────┴─────┴─────┴─────┴───────┴────────┴────────┴─────────┴──────┴────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                        DRIVE STATUS                                        │
+├──────────┬────────────────┬──────────────┬─────────┬────────┬──────────┬───────┬───────────┤
+│ DEGRADED │ DELETE PENDING │ DELETE READY │ EVICTED │ JOINED │ READABLE │ VALID │ WRITEABLE │
+├──────────┼────────────────┼──────────────┼─────────┼────────┼──────────┼───────┼───────────┤
+│        0 │              0 │            0 │       0 │     12 │       12 │    12 │        12 │
+└──────────┴────────────────┴──────────────┴─────────┴────────┴──────────┴───────┴───────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                                                    TABLES                                                                    │
+├─────────┬───────────┬──────────┬────────────┬────────┬────────┬────────┬─────────┬────────────────────┬───────────────────┬──────────────────┤
+│ POOL ID │ POOL NAME │ TABLE ID │    TYPE    │ DOMAIN │ HEALTH │ DRIVES │ EVICTED │ REBALANCING DRIVES │ REBUILDING DRIVES │ EXCEPTED LAYOUTS │
+├─────────┼───────────┼──────────┼────────────┼────────┼────────┼────────┼─────────┼────────────────────┼───────────────────┼──────────────────┤
+│       1 │    SYSTEM │        1 │  4way-Repl │ Global │  Green │     12 │       0 │                  0 │                 0 │                0 │
+├─────────┼───────────┼──────────┼────────────┼────────┼────────┼────────┼─────────┼────────────────────┼───────────────────┼──────────────────┤
+│       1 │    SYSTEM │        2 │ 3parity-EC │ Global │  Green │     12 │       0 │                  0 │                 0 │                  │
+└─────────┴───────────┴──────────┴────────────┴────────┴────────┴────────┴─────────┴────────────────────┴───────────────────┴──────────────────┘
+
+## Verify hwconfig tuning
+$ redcli realm config show -o yaml | grep hw-model | sort | uniq -c
+      1       red.ddn.com/hw-model: GOSHAWK-12
+
+$ sudo dmidecode -s system-product-name
+Goshawk-12
+
+$ grep coreset /var/log/red/cluster1-8cd5950e-0398-4da0-807c-7d95bdb712cd/1/instance.log 
+
+2. Login as realm_admin
+
+nodeadmin@srt013:~$ ruls
+3:24PM INF User "realm_admin" logged in successfully.
+
+3. Disable compression
+
+$ redcli config update auto_config --debug compression=off --propose
+3:24PM INF Auto Selecting cluster: cluster1
+3:24PM WRN Cluster config has 1 nodes. NOTE: Clusters of less than 4 nodes will experience data unavailability when a single node is down for any reason.
+3:24PM INF Config 'auto_config' updated.
+3:24PM INF Config auto_config proposed as runtime.
+3:24PM INF Tunable parameter compression=off
+
+$ redcli config show runtime  -o json | egrep 'compression'
+3:25PM INF Auto Selecting cluster: cluster1
+      "compression": "NONE",
+
+
+4. Proceed to S3 and create buckets
+
+nodeadmin@srt013:/work/kums/red/scripts/red_setup_snl/setup$ ./s3_setup.sh
+
+$ redcli s3 bucket list -t red
+3:30PM INF Auto Selecting cluster: cluster1
+3:30PM INF Auto Selecting subtenant: red
+3:30PM INF Auto Selecting service: redobj
+3:30PM INF Set limit to 25.
+┌─────────┬───────┬──────────┬──────────┐
+│   NAME  │ OWNER │ CAPACITY │ USAGE    │
+├─────────┼───────┼──────────┼──────────┤
+│ bucket1 │ admin │ -        │ 7.136 kB │
+├─────────┼───────┼──────────┼──────────┤
+│ bucket2 │ admin │ -        │ 7.2 kB   │
+├─────────┼───────┼──────────┼──────────┤
+│ bucket3 │ admin │ -        │ 7.2 kB   │
+└─────────┴───────┴──────────┴──────────┘
+
+4.5 Edit .bash and .aws/credentials to update the KEY
+
+./clone_bashrc_aws.sh
+
+5. Create POSIX dataset
+
+nodeadmin@srt023:/work/kums/red/scripts/red_setup_snl/setup$ redcli dataset create redfs --flavor posix -x '{"bucket_size":2097152,"compression":0}'
+9:04PM INF Auto selecting cluster: cluster1
+9:04PM INF Auto selecting tenant: red
+9:04PM INF Auto selecting subtenant: red
+9:04PM INF Successfully created dataset: redfs with profile SYSTEM_DATA_1
+
+nodeadmin@srt023:~$ redcli dataset list
+9:10PM INF Auto selecting cluster: cluster1
+9:10PM INF Set limit to 25.
+9:10PM INF Auto selecting tenant: red
+9:10PM INF Auto selecting subtenant: red
+┌─────────┬──────────┬───────────────┐
+│   NAME  │   QUOTA  │     USAGE     │
+├─────────┼──────────┼───────────────┤
+│ bucket1 │        - │ 8.552 kB (0%) │
+├─────────┤          ├───────────────┤
+│ bucket2 │          │ 10.11 kB (0%) │
+├─────────┤          ├───────────────┤
+│ bucket3 │          │ 13.02 kB (0%) │
+├─────────┼──────────┼───────────────┤
+│     red │ 88.39 TB │ 2.368 kB (0%) │
+├─────────┤          │               │
+│   redfs │          │               │
+└─────────┴──────────┴───────────────┘
+
+nodeadmin@srt023:~$ redcli dataset show redfs
+9:10PM INF Auto selecting cluster: cluster1
+9:10PM INF Auto selecting tenant: red
+9:10PM INF Auto selecting subtenant: red
+┌───────┬─────┬────────┬───────────────┬────────┬──────────┬───────────────┬───────────────┬─────────────┬──────────────────────┐
+│  NAME │  ID │ FLAVOR │    PROFILE    │  POOL  │   QUOTA  │     USAGE     │ FILES/VOLUMES │ DIRECTORIES │        XATTRS        │
+│       │     │        │               │        │          │               │               │             ├──────────────┬───────┤
+│       │     │        │               │        │          │               │               │             │      KEY     │ VALUE │
+├───────┼─────┼────────┼───────────────┼────────┼──────────┼───────────────┼───────────────┼─────────────┼──────────────┼───────┤
+│ redfs │ 118 │  posix │ SYSTEM_DATA_1 │ SYSTEM │ 88.39 TB │ 2.368 kB (0%) │             0 │           1 │   block_size │ 4 kiB │
+│       │     │        │               │        │          │               │               │             ├──────────────┼───────┤
+│       │     │        │               │        │          │               │               │             │  bucket_size │ 2 MiB │
+│       │     │        │               │        │          │               │               │             ├──────────────┼───────┤
+│       │     │        │               │        │          │               │               │             │  compression │     0 │
+│       │     │        │               │        │          │               │               │             ├──────────────┼───────┤
+│       │     │        │               │        │          │               │               │             │ dir_nstripes │    32 │
+│       │     │        │               │        │          │               │               │             ├──────────────┼───────┤
+│       │     │        │               │        │          │               │               │             │   dp_profile │     1 │
+│       │     │        │               │        │          │               │               │             ├──────────────┼───────┤
+│       │     │        │               │        │          │               │               │             │   ec_nparity │     3 │
+└───────┴─────┴────────┴───────────────┴────────┴──────────┴───────────────┴───────────────┴─────────────┴──────────────┴───────┘
+
+nodeadmin@srt023:~$ redcli dataset create dataloss-scratch --flavor posix -x '{"bucket_size":2097152,"compression":0,"skip_io_flags":"task,cat,eb_nometa,eb_noebc,eb_noref,bucket_write"}'
+9:11PM INF Auto selecting cluster: cluster1
+9:11PM INF Auto selecting tenant: red
+9:11PM INF Auto selecting subtenant: red
+9:11PM INF Successfully created dataset: dataloss-scratch with profile SYSTEM_DATA_1
+nodeadmin@srt023:~$ redcli dataset list
+9:11PM INF Auto selecting cluster: cluster1
+9:11PM INF Set limit to 25.
+9:11PM INF Auto selecting tenant: red
+9:11PM INF Auto selecting subtenant: red
+┌──────────────────┬──────────┬───────────────┐
+│       NAME       │   QUOTA  │     USAGE     │
+├──────────────────┼──────────┼───────────────┤
+│          bucket1 │        - │ 8.552 kB (0%) │
+├──────────────────┤          ├───────────────┤
+│          bucket2 │          │ 10.11 kB (0%) │
+├──────────────────┤          ├───────────────┤
+│          bucket3 │          │ 13.02 kB (0%) │
+├──────────────────┼──────────┼───────────────┤
+│ dataloss-scratch │ 88.39 TB │ 2.432 kB (0%) │
+├──────────────────┤          ├───────────────┤
+│              red │          │ 2.368 kB (0%) │
+├──────────────────┤          │               │
+│            redfs │          │               │
+└──────────────────┴──────────┴───────────────┘
+nodeadmin@srt023:~$ redcli dataset show dataloss-scratch
+9:12PM INF Auto selecting cluster: cluster1
+9:12PM INF Auto selecting tenant: red
+9:12PM INF Auto selecting subtenant: red
+┌──────────────────┬─────┬────────┬───────────────┬────────┬──────────┬───────────────┬───────────────┬─────────────┬───────────────────────────────────────────────────────────────────┐
+│       NAME       │  ID │ FLAVOR │    PROFILE    │  POOL  │   QUOTA  │     USAGE     │ FILES/VOLUMES │ DIRECTORIES │                               XATTRS                              │
+│                  │     │        │               │        │          │               │               │             ├───────────────┬───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │      KEY      │                       VALUE                       │
+├──────────────────┼─────┼────────┼───────────────┼────────┼──────────┼───────────────┼───────────────┼─────────────┼───────────────┼───────────────────────────────────────────────────┤
+│ dataloss-scratch │ 219 │  posix │ SYSTEM_DATA_1 │ SYSTEM │ 88.39 TB │ 2.432 kB (0%) │             0 │           1 │    block_size │                                             4 kiB │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │   bucket_size │                                             2 MiB │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │   compression │                                                 0 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │  dir_nstripes │                                                32 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │    dp_profile │                                                 1 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │    ec_nparity │                                                 3 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │ skip_io_flags │ task,cat,eb_nometa,eb_noebc,eb_noref,bucket_write │
+└──────────────────┴─────┴────────┴───────────────┴────────┴──────────┴───────────────┴───────────────┴─────────────┴───────────────┴───────────────────────────────────────────────────┘
+
+
+Client Setup
+------------
+
+Refer to /work/kums/red/scripts/red_setup_snl/docs/old/redfs_setup_U24_quick_HOWTO.txt for details
+
+##
+
+Below has been automated using scripts
+$ pwd
+/work/kums/red/scripts/red_setup_snl/setup
+
+./local_repo_redclient_install.sh
+./srt_mount_infinia_fs.sh
+
+
+###
+$ pwd
+/work/kums/repo/infinia/deb/WR_private_repo/2.3.0-rcx.11/client
+
+$ ls -1
+redcli_2.3.0-rcx.11_amd64.deb
+red-client-common_2.3.0-rcx.11_amd64.deb
+red-client-fs_2.3.0-rcx.11_amd64.deb
+red-client-fs-dkms_2.3.0-rcx.11_all.deb
+red-client-tools_2.3.0-rcx.11_amd64.deb
+
+nodeadmin@srt016:~$ dpkg -l | egrep -i 'redcli|red-client'
+
+sudo apt-get update
+
+nodeadmin@srt015:~$ sudo apt-get purge -y redcli
+
+nodeadmin@srt016:~$ sudo apt-get install -y /work/kums/repo/infinia/deb/WR_private_repo/2.3.0-rcx.11/client/red*.deb
+
+nodeadmin@srt016:~$ dpkg -l | egrep -i 'redcli|red-client'
+ii  red-client-common                      2.3.0~rcx.7                             amd64        RED common libraries and binaries
+ii  red-client-fs                          2.3.0~rcx.7                             amd64        RED POSIX filesystem client
+ii  red-client-fs-dkms                     2.3.0~rcx.7                             all          Kernel module that enables you to mount redfs
+ii  red-client-tools                       2.3.0~rcx.7                             amd64        RED client tools and libraries.
+ii  redcli                                 2.3.0~rcx.7                             amd64        RED command line interface
+
+nodeadmin@srt016:~$ sudo apt list --installed | egrep 'redcli|red-client'
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+red-client-common/now 2.3.0~rcx.7 amd64 [installed,local]
+red-client-fs-dkms/now 2.3.0~rcx.7 all [installed,local]
+red-client-fs/now 2.3.0~rcx.7 amd64 [installed,local]
+red-client-tools/now 2.3.0~rcx.7 amd64 [installed,local]
+redcli/now 2.3.0~rcx.7 amd64 [installed,local]
+
+nodeadmin@srt016:~$ sudo lsmod | grep redfs
+nodeadmin@srt016:~$ sudo modprobe redfs
+nodeadmin@srt016:~$ sudo lsmod | grep redfs
+redfs                 249856  0
+
+nodeadmin@srt016:~$ ls -la /dev/redfs
+crw------- 1 root root 10, 119 Dec 16 21:25 /dev/redfs
+
+nodeadmin@srt016:~$ export REDCLI_SERVER="https://10.36.7.123:443/redapi/v1"
+nodeadmin@srt016:~$ echo $REDCLI_SERVER
+https://10.36.7.123:443/redapi/v1
+
+nodeadmin@srt016:~$ redcli user login realm_admin --password DDN1nfini@R0cks! --server $REDCLI_SERVER
+9:27PM INF User "realm_admin" logged in successfully.
+nodeadmin@srt016:~$ sudo usermod -a -G red root
+nodeadmin@srt016:~$ sudo -E redcli client setup -t red -s red --flavor posix --server $REDCLI_SERVER
+9:27PM INF Auto selecting cluster: cluster1
+9:27PM WRN With flavor posix, to handle posix daemon redfs which is started by root, redclientagent will be started with root
+9:27PM INF Realm node: false
+9:27PM INF Certificates and keys saved at "/etc/red/certs". Be careful!
+9:27PM INF Created link /home/nodeadmin/.config/red/default for /home/nodeadmin/.config/red/20263271-0e1e-48b7-912d-d2a603778f75
+9:27PM INF Created link /home/nodeadmin/.config/red/redrc for redrc /home/nodeadmin/.config/red/default/redrc
+9:27PM INF Setting up redclientagent systemd service
+9:27PM INF Starting redclientagent systemd service with user root, group root, types -t posix
+9:27PM INF Successfully created config file /etc/sysctl.d/99-zzred-posix.conf to enable io_uring
+9:27PM INF RED client environment setup complete, Hint: run 'source /home/nodeadmin/.config/red/20263271-0e1e-48b7-912d-d2a603778f75/redrc' to set RED environment
+
+
+nodeadmin@srt016:~$ ls -l /home/nodeadmin/.config/red/
+total 8
+drwxr-x--- 3 nodeadmin nodeadmin 4096 Dec 16 21:27 20263271-0e1e-48b7-912d-d2a603778f75
+lrwxrwxrwx 1 nodeadmin nodeadmin   64 Dec 16 21:27 default -> /home/nodeadmin/.config/red/20263271-0e1e-48b7-912d-d2a603778f75
+lrwxrwxrwx 1 nodeadmin nodeadmin   41 Dec 16 21:27 redrc -> /home/nodeadmin/.config/red/default/redrc
+
+## For SNL
+
+Change reference to 192.168.192 ---> 192.168.3 (Since Client can only communicate over 192.168.3)
+
+nodeadmin@srt015:~$ sudo grep '192.168' /home/nodeadmin/.config/red/669e81f4-9401-4173-806d-eb0147e411cf/redrc
+export REDCLI_SERVER=https://10.36.7.113:443/redapi/v1,192.168.7.113
+export RED_SERVER=192.168.7.113
+export RED_STREAM=192.168.7.113
+
+##
+
+nodeadmin@srt016:~$ source /home/nodeadmin/.config/red/default/redrc
+9:30PM INF Auto selecting cluster: cluster1
+
+nodeadmin@srt016:~$ echo $RED_USER
+94e886cf-f51b-4677-85c7-3c67e10366d3
+nodeadmin@srt016:~$ grep RED_USER .config/red/default/redrc 
+export RED_USER=94e886cf-f51b-4677-85c7-3c67e10366d3
+
+nodeadmin@srt016:~$ sudo mkdir -p /mnt/redfs
+
+nodeadmin@srt016:~$ sudo vi /etc/red/redfs/redfs_user.env
+nodeadmin@srt016:~$ sudo cat /etc/red/redfs/redfs_user.env
+# This value can hold persistent admin config values,
+# which are used when mounting redfs
+# config value can be set in the format
+#KEY=value
+REDFS_MEM_LIMIT_MAX_PCT=60
+RED_WORKLOAD=5
+RED_FS_COREMASK="[0-47]"
+
+Reference for above tunings: https://ime-dev.slack.com/archives/C09BP8XJX5G/p1768947301508859?thread_ts=1768945220.969059&cid=C09BP8XJX5G
+
+## Sandia redfs_user.env is in this slack thread - https://ime-dev.slack.com/archives/C09BP8XJX5G/p1768946904421249?thread_ts=1768945220.969059&cid=C09BP8XJX5G
+
+nodeadmin@srt015:~$ sudo mount -t redfs redfs /mnt/redfs
+Cannot open trace events file /opt/ddn/red/red_sysadmin_events.json, unable to open /opt/ddn/red/red_sysadmin_events.json: No such file or directory
+2025-12-04 22:49:40.712819000 WARNG SLOW ALLOCATION - f:malloc n:8192 t:209mS
+2025-12-04 22:49:40.817969000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:124mS
+2025-12-04 22:49:41.020589000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:195mS
+2025-12-04 22:49:41.150928000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:112mS
+nodeadmin@srt015:~$ df -h | grep redfs
+cluster1:red/red/redfs              81T     0   81T   0% /mnt/redfs
+nodeadmin@srt015:~$ echo "Greetings from `hostname` at `date`" >> /mnt/redfs/greetings.txt
+nodeadmin@srt015:~$ cat /mnt/redfs/greetings.txt
+Greetings from srt015 at Thu Dec  4 10:50:14 PM UTC 2025
+
+
+## Verify the RED_CLIENT CPUSET tuning
+nodeadmin@srt014:~$ ps -eLo pid,tid,psr,pcpu,stat,comm | grep reactor | tail -5
+2754170 2754241  43  0.5 SLsl clt_reactor_43
+2754170 2754242  44  0.4 SLsl clt_reactor_44
+2754170 2754243  45  0.4 SLsl clt_reactor_45
+2754170 2754244  46  0.5 SLsl clt_reactor_46
+2754170 2754245  47  0.4 SLsl clt_reactor_47
+nodeadmin@srt014:~$ ps -eLo pid,tid,psr,pcpu,stat,comm | grep reactor | wc -l
+48
+
+
+## Verify that RED_TRACE is commented and thus disabled
+
+nodeadmin@srt015:~$ grep 'RED_TRACE' /etc/red/deploy/red_client.env 
+#RED_TRACE=/opt/ddn/red/red-trace.env
+
+root@srt015:~# grep "RED_TRACE" /var/log/red/client/mnt_redfs/redfs.log 
+-- RED_TRACE                <null>
+-- RED_TRACE                <null>
+
+#### With SKIP-IO Enabled
+
+Server:
+
+https://ime-ddn.atlassian.net/wiki/spaces/RED/pages/1591280321/Benchmarking+with+SKIP-IO
+
+nodeadmin@srt024:~$ redcli dataset create dataloss-scratch --flavor posix -x '{"bucket_size":2097152,"compression":0,"skip_io_flags":"task,cat,eb_nometa,eb_noebc,eb_noref,bucket_write"}'
+3:57PM INF Auto selecting cluster: cluster1
+3:57PM INF Auto selecting tenant: red
+3:57PM INF Auto selecting subtenant: red
+3:57PM INF Successfully created dataset: dataloss-scratch with profile SYSTEM_DATA_1
+nodeadmin@srt024:~$ 
+nodeadmin@srt024:~$ redcli dataset list
+3:58PM INF Auto selecting cluster: cluster1
+3:58PM INF Set limit to 25.
+┌──────────────────┬────────┬───────────┬──────────┬───────┬──────────┬───────────────┐
+│       NAME       │ TENANT │ SUBTENANT │ SERVICES │ OWNER │   QUOTA  │     USAGE     │
+├──────────────────┼────────┼───────────┼──────────┼───────┼──────────┼───────────────┤
+│          bucket1 │    red │       red │          │       │        - │ 7.136 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       │          ├───────────────┤
+│          bucket2 │    red │       red │          │       │          │ 7.136 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       │          ├───────────────┤
+│          bucket3 │    red │       red │          │       │          │   7.2 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       ├──────────┼───────────────┤
+│ dataloss-scratch │    red │       red │          │       │ 88.39 TB │ 2.464 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       │          ├───────────────┤
+│              red │    red │       red │          │       │          │ 2.368 kB (0%) │
+├──────────────────┼────────┼───────────┼──────────┤       │          ├───────────────┤
+│            redfs │    red │       red │          │       │          │ 2.737 TB (3%) │
+└──────────────────┴────────┴───────────┴──────────┴───────┴──────────┴───────────────┘
+nodeadmin@srt024:~$ redcli dataset show dataloss-scratch
+3:58PM INF Auto selecting cluster: cluster1
+3:58PM INF Auto selecting tenant: red
+3:58PM INF Auto selecting subtenant: red
+┌──────────────────┬─────┬────────┬───────────────┬────────┬──────────┬───────────────┬───────────────┬─────────────┬───────────────────────────────────────────────────────────────────┐
+│       NAME       │  ID │ FLAVOR │    PROFILE    │  POOL  │   QUOTA  │     USAGE     │ FILES/VOLUMES │ DIRECTORIES │                               XATTRS                              │
+│                  │     │        │               │        │          │               │               │             ├───────────────┬───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │      KEY      │                       VALUE                       │
+├──────────────────┼─────┼────────┼───────────────┼────────┼──────────┼───────────────┼───────────────┼─────────────┼───────────────┼───────────────────────────────────────────────────┤
+│ dataloss-scratch │ 317 │  posix │ SYSTEM_DATA_1 │ SYSTEM │ 88.39 TB │ 2.464 kB (0%) │             0 │           1 │    block_size │                                             4 kiB │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │   bucket_size │                                             2 MiB │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │   compression │                                                 0 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │  dir_nstripes │                                                32 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │    dp_profile │                                                 1 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │    ec_nparity │                                                 3 │
+│                  │     │        │               │        │          │               │               │             ├───────────────┼───────────────────────────────────────────────────┤
+│                  │     │        │               │        │          │               │               │             │ skip_io_flags │ task,cat,eb_nometa,eb_noebc,eb_noref,bucket_write │
+└──────────────────┴─────┴────────┴───────────────┴────────┴──────────┴───────────────┴───────────────┴─────────────┴───────────────┴───────────────────────────────────────────────────┘
+
+
+Client setup
+
+nodeadmin@srt016:~$ sudo mkdir /mnt/scratchfs_dataloss
+nodeadmin@srt016:~$ sudo chmod 0777 /mnt/scratchfs_dataloss/
+nodeadmin@srt016:~$ sudo mount -t redfs dataloss-scratch /mnt/scratchfs_dataloss
+Cannot open trace events file /opt/ddn/red/red_sysadmin_events.json, unable to open /opt/ddn/red/red_sysadmin_events.json: No such file or directory
+2025-12-17 16:20:57.772641000 WARNG SLOW ALLOCATION - f:malloc n:8192 t:102mS
+2025-12-17 16:20:58.067800000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:128mS
+nodeadmin@srt016:~$ mount | grep dataloss
+cluster1:red/red/dataloss-scratch on /mnt/scratchfs_dataloss type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+
+nodeadmin@srt016:~$ df -h | grep dataloss
+cluster1:red/red/dataloss-scratch   81T     0   81T   0% /mnt/scratchfs_dataloss
+nodeadmin@srt016:~$ echo "Greetings from `hostname` at `date`" >> /mnt/scratchfs_dataloss/greetings.txt
+nodeadmin@srt016:~$ ls /mnt/scratchfs_dataloss/
+greetings.txt
+## Empty file
+nodeadmin@srt016:~$ ls -l /mnt/scratchfs_dataloss/
+total 0
+-rw-rw---- 1 nodeadmin nodeadmin 0 Jan  1  1970 greetings.txt
+
+nodeadmin@srt014:~$ cat /mnt/scratchfs_dataloss/greetings.txt 
+nodeadmin@srt014:~$ ls -lh /mnt/scratchfs_dataloss/
+total 0
+-rw-rw---- 1 nodeadmin nodeadmin 0 Jan  1  1970 greetings.txt
+nodeadmin@srt014:~$ stat /mnt/scratchfs_dataloss/greetings.txt 
+  File: /mnt/scratchfs_dataloss/greetings.txt
+  Size: 0         	Blocks: 0          IO Block: 4096   regular empty file
+Device: 0,53	Inode: 65          Links: 1
+Access: (0660/-rw-rw----)  Uid: ( 1000/nodeadmin)   Gid: ( 1000/nodeadmin)
+Access: 1970-01-01 00:00:00.000000000 +0000
+Modify: 1970-01-01 00:00:00.000000000 +0000
+Change: 2025-12-10 16:06:06.476595282 +0000
+ Birth: -
+
+Mount in another client node
+
+nodeadmin@srt015:~$ sudo mkdir /mnt/scratchfs_dataloss
+nodeadmin@srt015:~$ sudo mount -t redfs dataloss-scratch /mnt/scratchfs_dataloss
+Cannot open trace events file /opt/ddn/red/red_sysadmin_events.json, unable to open /opt/ddn/red/red_sysadmin_events.json: No such file or directory
+2025-12-10 16:11:16.542429000 WARNG SLOW ALLOCATION - f:malloc n:8192 t:165mS
+2025-12-10 16:11:16.838122000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:176mS
+2025-12-10 16:11:16.838129000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:100mS
+2025-12-10 16:11:16.908536000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:147mS
+2025-12-10 16:11:16.908529000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:111mS
+2025-12-10 16:11:16.908528000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:147mS
+2025-12-10 16:11:16.908573000 WARNG SLOW ALLOCATION - f:operator new [] n:1603560 t:111mS
+nodeadmin@srt015:~$ mount | grep dataloss
+cluster1:red/red/dataloss-scratch on /mnt/scratchfs_dataloss type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+nodeadmin@srt015:~$ df -h | grep dataloss
+cluster1:red/red/dataloss-scratch   81T     0   81T   0% /mnt/scratchfs_dataloss
+nodeadmin@srt015:~$ ls /mnt/scratchfs_dataloss/
+greetings.txt
+
+nodeadmin@srt015:~$ echo "Greetings from `hostname` at `date`" >> /mnt/scratchfs_dataloss/greetings.txt
+nodeadmin@srt015:~$ ls -lh /mnt/scratchfs_dataloss/
+total 0
+-rw-rw---- 1 nodeadmin nodeadmin 0 Jan  1  1970 greetings.txt
+
+
+## To run redfs_bench_tool
+
+/opt/ddn/red/bin/redfs_bench_tool --help
+
+Script is in:
+
+$ pwd
+/work/kums/red/redfs/scripts
+
+$ ls -1
+all_client_nodes.tmp
+all_client_nodes.txt
+pred_redfs_perf.sh
+
+## Issue
+
+nodeadmin@srt018:~$ mount | grep redfs
+cluster1:red/red/redfs on /mnt/redfs type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+nodeadmin@srt018:~$ ls /mnt/redfs/
+ls: cannot open directory '/mnt/redfs/': Transport endpoint is not connected
+
+nodeadmin@srt018:~$ sudo umount -f /mnt/redfs 
+nodeadmin@srt018:~$ sudo mount -t redfs -o conf_file=/etc/red/redfs/redfs_user.env redfs /mnt/redfs
+nodeadmin@srt018:~$ mount | grep redfs
+cluster1:red/red/redfs on /mnt/redfs type redfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+nodeadmin@srt018:~$ ls /mnt/redfs/
+greetings.txt
+
+## log files
+
+root@srt018:/var/log/red/client/mnt_redfs# pwd
+/var/log/red/client/mnt_redfs
+
+root@srt018:/var/log/red/client/mnt_redfs# ls -l redfs.log 
+-rw------- 1 root nodeadmin 934595 Oct 30 15:37 redfs.log
+
+root@srt018:/var/log/red/client/mnt_redfs# tail -2 redfs.log 
+2025-10-30 15:37:37.583134417 0x0 548565  2 0 src/rpc2/net_endpt.cpp:810 Connection establishment from device rocep65s0f0 (sockaddr_in://192.168.8.118) to peer 1 (sockaddr_in://192.168.8.113) timed out
+2025-10-30 15:37:37.583360555 0x0 548566  3 0 src/rpc2/net_endpt.cpp:810 Connection establishment from device rocep65s0f0 (sockaddr_in://192.168.8.118) to peer 1 (sockaddr_in://192.168.8.113) timed out
+
+root@srt018:/var/log/red/client/mnt_redfs# cat redfs.log | egrep 'CRITC|Internal'
+redfs: 2025-10-29 18:26:19: Internal Error. Contact DDN Service - PANIC@custom-251006.1c92bed9e5-include/util/red_metrics.hpp:544: assertion failed (status == RED_SUCCESS) 
+2025-10-29 18:26:26.690461000 CRITC Halt - PANIC
+
+## Slack thread
+cust-sandia: Mon Oct13
+https://ime-dev.slack.com/archives/C09BP8XJX5G/p1760377498302459
+
+## nettest 
+
+nodeadmin@srt017:~$ export REDCLI_SERVER="https://10.36.7.123:443/redapi/v1"
+nodeadmin@srt017:~$ redcli user login realm_admin --password DDN1nfini@R0cks! --server $REDCLI_SERVER
+9:18PM INF User "realm_admin" logged in successfully.
+nodeadmin@srt017:~$ nettest config generate && nettest test generate
+9:18PM INF Using server https://10.36.7.123:443/redapi/v1.
+9:18PM INF Autoselecting cluster: cluster1
+9:18PM INF Configuration for cluster cluster1 written: /home/nodeadmin/.config/red/nettest/cluster1_config.json
+9:18PM INF Using server https://10.36.7.123:443/redapi/v1.
+9:18PM INF Autoselecting cluster: cluster1
+9:18PM INF 55 tests, and 8 PRD tests generated.
+9:18PM INF Tests for cluster cluster1 written: /home/nodeadmin/.config/red/nettest/cluster1_test.json
+nodeadmin@srt017:~$ redcli nettest run -f 25,27
+9:19PM INF Auto selecting cluster: cluster1
+9:19PM INF Running test 25...
+9:19PM INF done.
+Test: all -> all instances (parallel) multi-threaded 0k RPC
+┌────────────────────────┬────────┬────────┬─────────────────────┬───────────────┐
+│        ENDPOINT        │  HOST  │  IOPS  │      IOPS RANGE     │  LATENCY (Μs) │
+│                        │        │        │    [Min/Avg/Max]    │ [Min/Avg/Max] │
+├────────────────────────┼────────┼────────┼─────────────────────┼───────────────┤
+│ srt016_client_09020c6e │ srt016 │  68435 │ [68435/68435/68435] │ [721/721/721] │
+├────────────────────────┼────────┼────────┼─────────────────────┼───────────────┤
+│ srt016_client_0c055321 │ srt016 │  68357 │ [68357/68357/68357] │ [721/721/721] │
+├────────────────────────┼────────┼────────┼─────────────────────┼───────────────┤
+│ srt017_client_4aa56a50 │ srt017 │  68893 │ [68893/68893/68893] │ [719/719/719] │
+├────────────────────────┼────────┼────────┼─────────────────────┼───────────────┤
+│ srt017_client_b8cdc496 │ srt017 │  66811 │ [66811/66811/66811] │ [731/731/731] │
+├────────────────────────┼────────┼────────┼─────────────────────┼───────────────┤
+│ srt023_client_4fc81ad0 │ srt023 │  94820 │ [94820/94820/94820] │ [179/179/179] │
+├────────────────────────┼────────┼────────┼─────────────────────┼───────────────┤
+│ TOTAL                  │        │ 367319 │                     │               │
+└────────────────────────┴────────┴────────┴─────────────────────┴───────────────┘
+┌────────────┬────────────────────────┬────────┬───────┐
+│            │        ENDPOINT        │  HOST  │  IOPS │
+├────────────┼────────────────────────┼────────┼───────┤
+│    Top 15% │ srt023_client_4fc81ad0 │ srt023 │ 94820 │
+├────────────┼────────────────────────┼────────┼───────┤
+│ Bottom 15% │ srt017_client_b8cdc496 │ srt017 │ 66811 │
+└────────────┴────────────────────────┴────────┴───────┘
+9:19PM INF Running test 27...
+9:19PM INF done.
+Test: all -> all instances (parallel) multi-threaded 1m RPC (rdma)
+┌────────────────────────┬────────┬───────┬─────────────────────┬────────┬─────────────────────┬──────────────────┐
+│        ENDPOINT        │  HOST  │  IOPS │      IOPS RANGE     │   B/W  │      B/W RANGE      │   LATENCY (Μs)   │
+│                        │        │ TOTAL │    [Min/Avg/Max]    │ (MB/S) │    [Min/Avg/Max]    │   [Min/Avg/Max]  │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt016_client_09020c6e │ srt016 │ 10655 │ [10655/10655/10655] │  11173 │ [11173/11173/11173] │ [4559/4559/4559] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt016_client_0c055321 │ srt016 │ 10796 │ [10796/10796/10796] │  11321 │ [11321/11321/11321] │ [4474/4474/4474] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt017_client_4aa56a50 │ srt017 │ 12330 │ [12330/12330/12330] │  12929 │ [12929/12929/12929] │ [3922/3922/3922] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt017_client_b8cdc496 │ srt017 │ 12209 │ [12209/12209/12209] │  12802 │ [12802/12802/12802] │ [3980/3980/3980] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt023_client_4fc81ad0 │ srt023 │ 40707 │ [40707/40707/40707] │  42685 │ [42685/42685/42685] │    [395/395/395] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ TOTAL                  │        │ 86700 │                     │ 90911  │                     │                  │
+└────────────────────────┴────────┴───────┴─────────────────────┴────────┴─────────────────────┴──────────────────┘
+┌────────────┬────────────────────────┬────────┬───────┐
+│            │        ENDPOINT        │  HOST  │  IOPS │
+├────────────┼────────────────────────┼────────┼───────┤
+│    Top 15% │ srt023_client_4fc81ad0 │ srt023 │ 40707 │
+├────────────┼────────────────────────┼────────┼───────┤
+│ Bottom 15% │ srt016_client_09020c6e │ srt016 │ 10655 │
+└────────────┴────────────────────────┴────────┴───────
+
+## qperf
+
+nodeadmin@srt017:~$ qperf srt023-e0 -t 10 -cm1 rc_bw
+rc_bw:
+    bw  =  24.5 GB/sec
+nodeadmin@srt017:~$ qperf srt023-e1 -t 10 -cm1 rc_bw
+rc_bw:
+    bw  =  24.4 GB/sec
+
+nodeadmin@srt017:~$ export REDCLI_SERVER="https://10.36.7.123:443/redapi/v1"
+nodeadmin@srt017:~$ redcli user login realm_admin --password DDN1nfini@R0cks! --server $REDCLI_SERVER
+3:07PM INF User "realm_admin" logged in successfully.
+nodeadmin@srt017:~$ redcli nettest run -f 17
+3:08PM INF Auto selecting cluster: cluster1
+3:08PM INF Running test 17...
+3:08PM INF done.
+Test: client -> instance multi-threaded 1m RDMA
+┌────────────────────────┬────────┬───────┬─────────────────────┬────────┬─────────────────────┬──────────────────┐
+│        ENDPOINT        │  HOST  │  IOPS │      IOPS RANGE     │   B/W  │      B/W RANGE      │   LATENCY (Μs)   │
+│                        │        │ TOTAL │    [Min/Avg/Max]    │ (MB/S) │    [Min/Avg/Max]    │   [Min/Avg/Max]  │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt017_client_4aa56a50 │ srt017 │ 45891 │ [45891/45891/45891] │  48120 │ [48120/48120/48120] │ [1051/1051/1051] │
+└────────────────────────┴────────┴───────┴─────────────────────┴────────┴─────────────────────┴──────────────────┘
+nodeadmin@srt017:~$ redcli nettest run -f 39
+3:09PM INF Auto selecting cluster: cluster1
+3:09PM INF Running test 39...
+3:09PM INF done.
+Test: all clients -> all instances (parallel) multi-threaded 1m RPC (rdma)
+┌────────────────────────┬────────┬───────┬─────────────────────┬────────┬─────────────────────┬──────────────────┐
+│        ENDPOINT        │  HOST  │  IOPS │      IOPS RANGE     │   B/W  │      B/W RANGE      │   LATENCY (Μs)   │
+│                        │        │ TOTAL │    [Min/Avg/Max]    │ (MB/S) │    [Min/Avg/Max]    │   [Min/Avg/Max]  │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt016_client_09020c6e │ srt016 │ 10684 │ [10684/10684/10684] │  11203 │ [11203/11203/11203] │ [4531/4531/4531] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt016_client_0c055321 │ srt016 │ 10795 │ [10795/10795/10795] │  11319 │ [11319/11319/11319] │ [4467/4467/4467] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt017_client_4aa56a50 │ srt017 │ 12440 │ [12440/12440/12440] │  13044 │ [13044/13044/13044] │ [3873/3873/3873] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt017_client_b8cdc496 │ srt017 │ 12214 │ [12214/12214/12214] │  12808 │ [12808/12808/12808] │ [3966/3966/3966] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ srt023_client_4fc81ad0 │ srt023 │ 40990 │ [40990/40990/40990] │  42982 │ [42982/42982/42982] │    [392/392/392] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼──────────────────┤
+│ TOTAL                  │        │ 87126 │                     │ 91358  │                     │                  │
+└────────────────────────┴────────┴───────┴─────────────────────┴────────┴─────────────────────┴──────────────────┘
+┌────────────┬────────────────────────┬────────┬───────┐
+│            │        ENDPOINT        │  HOST  │  IOPS │
+├────────────┼────────────────────────┼────────┼───────┤
+│    Top 15% │ srt023_client_4fc81ad0 │ srt023 │ 40990 │
+├────────────┼────────────────────────┼────────┼───────┤
+│ Bottom 15% │ srt016_client_09020c6e │ srt016 │ 10684 │
+└────────────┴────────────────────────┴────────┴───────┘
+nodeadmin@srt017:~$ redcli nettest run -f 31
+3:36PM INF Auto selecting cluster: cluster1
+3:36PM INF Running test 31...
+3:37PM INF done.
+Test: all clients -> all instances (serial) single-threaded 1m RPC (rdma)
+┌────────────────────────┬────────┬───────┬─────────────────────┬────────┬─────────────────────┬─────────────────────┐
+│        ENDPOINT        │  HOST  │  IOPS │      IOPS RANGE     │   B/W  │      B/W RANGE      │     LATENCY (Μs)    │
+│                        │        │ TOTAL │    [Min/Avg/Max]    │ (MB/S) │    [Min/Avg/Max]    │    [Min/Avg/Max]    │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼─────────────────────┤
+│ srt016_client_09020c6e │ srt016 │    22 │          [22/22/22] │     23 │          [23/23/23] │ [43904/43904/43904] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼─────────────────────┤
+│ srt016_client_0c055321 │ srt016 │    29 │          [29/29/29] │     30 │          [30/30/30] │ [34459/34459/34459] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼─────────────────────┤
+│ srt017_client_4aa56a50 │ srt017 │    29 │          [29/29/29] │     30 │          [30/30/30] │ [34221/34221/34221] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼─────────────────────┤
+│ srt017_client_b8cdc496 │ srt017 │    29 │          [29/29/29] │     30 │          [30/30/30] │ [33936/33936/33936] │
+├────────────────────────┼────────┼───────┼─────────────────────┼────────┼─────────────────────┼─────────────────────┤
+│ srt023_client_4fc81ad0 │ srt023 │ 31742 │ [31742/31742/31742] │  33283 │ [33283/33283/33283] │          [31/31/31] │
+└────────────────────────┴────────┴───────┴─────────────────────┴────────┴─────────────────────┴─────────────────────┘
+┌────────────┬────────────────────────┬────────┬───────┐
+│            │        ENDPOINT        │  HOST  │  IOPS │
+├────────────┼────────────────────────┼────────┼───────┤
+│    Top 15% │ srt023_client_4fc81ad0 │ srt023 │ 31742 │
+├────────────┼────────────────────────┼────────┼───────┤
+│ Bottom 15% │ srt016_client_09020c6e │ srt016 │    22 │
+└────────────┴────────────────────────┴────────┴───────┘
