@@ -1,0 +1,240 @@
+
+krajara@red01:~$ date
+Mon Mar  9 08:54:46 AM MDT 2026
+
+Server:
+-------
+
+krajara@red01:~$ ruls
+8:50AM INF User "realm_admin" logged in successfully.
+krajara@red01:~$  redcli trace set action -A all -s 0 -w 1,2,3,4,5 -k 6,7
+8:50AM INF Auto selecting cluster: cluster1
+┌─────────────┬────────┐
+│   Instance  │ Result │
+├─────────────┼────────┤
+│ cluster1[1] │     Ok │
+└─────────────┴────────┘
+krajara@red01:~$ redcli trace set action -A e2e -w 0,1,2,3,4,5 -k 6,7
+8:50AM INF Auto selecting cluster: cluster1
+┌─────────────┬────────┐
+│   Instance  │ Result │
+├─────────────┼────────┤
+│ cluster1[1] │     Ok │
+└─────────────┴────────┘
+krajara@red01:~$ redcli trace set fmtoption class true
+8:51AM INF Auto selecting cluster: cluster1
+┌─────────────┬────────┐
+│   Instance  │ Result │
+├─────────────┼────────┤
+│ cluster1[1] │     Ok │
+└─────────────┴────────┘
+krajara@red01:~$ redcli trace set wrap -l 0 -n 33554432 -H 1000.0 -b 100 -Q 4
+8:51AM INF Auto selecting cluster: cluster1
+┌─────────────┬────────┐
+│   Instance  │ Result │
+├─────────────┼────────┤
+│ cluster1[1] │     Ok │
+└─────────────┴────────┘
+krajara@red01:~$ redcli trace set wrap -l 1 -n 33554432 -H 1000.0 -b 100 -Q 4
+8:51AM INF Auto selecting cluster: cluster1
+┌─────────────┬────────┐
+│   Instance  │ Result │
+├─────────────┼────────┤
+│ cluster1[1] │     Ok │
+└─────────────┴────────┘
+krajara@red01:~$ redcli trace set wrap -l 2 -n 33554432 -H 1000.0 -b 100 -Q 4
+8:52AM INF Auto selecting cluster: cluster1
+┌─────────────┬────────┐
+│   Instance  │ Result │
+├─────────────┼────────┤
+│ cluster1[1] │     Ok │
+└─────────────┴────────┘
+krajara@red01:~$ redcli trace set wrap -l 3 -n 33554432 -H 1000.0 -b 100 -Q 4
+8:52AM INF Auto selecting cluster: cluster1
+┌─────────────┬────────┐
+│   Instance  │ Result │
+├─────────────┼────────┤
+│ cluster1[1] │     Ok │
+└─────────────┴────────┘
+krajara@red01:~$ redcli trace set wrap -l 4 -n 33554432 -H 10000.0 -b 100 -Q 4
+8:52AM INF Auto selecting cluster: cluster1
+┌─────────────┬────────┐
+│   Instance  │ Result │
+├─────────────┼────────┤
+│ cluster1[1] │     Ok │
+└─────────────┴────────┘
+krajara@red01:~$ redcli trace set wrap -l 5 -n 33554432 -H 10000.0 -b 100 -Q 4
+8:53AM INF Auto selecting cluster: cluster1
+┌─────────────┬────────┐
+│   Instance  │ Result │
+├─────────────┼────────┤
+│ cluster1[1] │     Ok │
+└─────────────┴────────┘
+
+Client:
+-------
+
+krajara@red01:~$ redcli trace set action -A all -s 0 -w 1,2,3,4,5 -k 6,7 -C /usr/bin/redfsd@lux23                                                                                            9:03AM INF Auto selecting cluster: cluster1
+┌───────────────────────┬────────┐
+│         Client        │ Result │
+├───────────────────────┼────────┤
+│ /usr/bin/redfsd@lux23 │     Ok │
+└───────────────────────┴────────┘
+krajara@red01:~$ redcli trace set action -A e2e -w 0,1,2,3,4,5 -k 6,7 -C /usr/bin/redfsd@lux23
+9:04AM INF Auto selecting cluster: cluster1
+┌───────────────────────┬────────┐
+│         Client        │ Result │
+├───────────────────────┼────────┤
+│ /usr/bin/redfsd@lux23 │     Ok │
+└───────────────────────┴────────┘
+krajara@red01:~$ redcli trace set fmtoption class true -C  /usr/bin/redfsd@lux23
+9:05AM INF Auto selecting cluster: cluster1
+┌───────────────────────┬────────┐
+│         Client        │ Result │
+├───────────────────────┼────────┤
+│ /usr/bin/redfsd@lux23 │     Ok │
+└───────────────────────┴────────┘
+
+## Capture dumps
+
+krajara@red01:~$  redcli logs dump -T --target instances -r "REDFE-1689-March9-1"
+9:25AM INF Dump request submitted successfully.
+krajara@red01:~$ redcli logs dump -T --target posix -r "REDFE-1689-March9-1"
+9:25AM INF Dump request submitted successfully.
+krajara@red01:~$  redcli logs dump -T --target instances -r "REDFE-1689-March9-2"
+9:29AM INF Dump request submitted successfully.
+krajara@red01:~$ redcli logs dump -T --target posix -r "REDFE-1689-March9-2"
+9:30AM INF Dump request submitted successfully.
+
+## Verify traces
+
+krajara@red01:/var/log/red/cluster1-72d53004-107a-4faf-86d1-0f05516cada4/1/2026-03-09_15:29:58.822767-sig_10$ grep extent_put_sized_op *.trcrpt | wc -l
+8335
+krajara@red01:/var/log/red/cluster1-72d53004-107a-4faf-86d1-0f05516cada4/1/2026-03-09_15:29:58.822767-sig_10$ grep extent_put_sized_op *.trcrpt | tail -5
+level04[038].trcrpt:2026-03-09 15:29:43.280226521    1    212 38 object 4 src/hndlr/object_ops/object_put.cpp:591 extent_put_sized_op 0x7fffe7926ba0: task done with rc 0 in 320 uS: ext_io 0 uS, attr_io 10 uS, opre_io 309
+level04[038].trcrpt:2026-03-09 15:29:43.285336877    1    212 38 object 4 src/hndlr/object_ops/object_put.cpp:343 extent_put_sized_op 0x7fffe7949de0: OSTOBJ:0x0000000000000000:00000000000023AF set new OST object size 8587837440, granularity 2097152, truncgen 4784003378839563
+
+[krajara@lux23 2026-03-09_09:30:02.910795-sig_10.4345.redfsd]$ grep rfs_write_zero_copy_op_t *.trcrpt | wc -l
+31697
+[krajara@lux23 2026-03-09_09:30:02.910795-sig_10.4345.redfsd]$ grep rfs_write_zero_copy_op_t *.trcrpt | tail -5
+level05[120].trcrpt:2026-03-09 09:28:29.310766193 0xe0001   4492 120 redfs_client 5 src/client/rfs/rfs_write.cpp:608 rfs_write_zero_copy_op_t: posix write done inum 15126 fsize 3785359360 written 2097152
+level05[124].trcrpt:2026-03-09 09:28:08.644410874 0xe0001   4496 124 redfs_client 5 src/client/rfs/rfs_write.cpp:608 rfs_write_zero_copy_op_t: posix write done inum 16092 fsize 148897792 written 2097152
+
+### Upload bundle
+
+Server Node:
+krajara@red01:~$  date; redcli logs upload -C "REDFE-1689-StorageNode-March9" -l heavy -b ddn_production
+Mon Mar  9 09:35:47 AM MDT 2026
+9:35AM INF Creating heavy log bundle
+9:35AM INF Collecting logs from [red01]
+9:35AM INF Logs upload task [d0dd302c-a70f-4408-b11a-81d153eccce1] has been started.
+9:35AM INF Logs URL: s3://inbound-w/ddnred/563462E2-0F70-AA17-6F09-4C6D37231845/red_realm_001/REDFE-1689-StorageNode-March9/heavy_20260309153547-72d53004-107a-4faf-86d1-0f05516cada4.tar on server 192.168.192.201
+
+$ redcli task list
+
+krajara@red01:~$ redcli task show d0dd302c-a70f-4408-b11a-81d153eccce1
+┌──────────────────────────────────────┬──────────────────────┬───────────┬────────────────┬──────────┬──────────┬─────────┬───────┐
+│                 UUID                 │         NAME         │    TYPE   │ DURATION (sec) │   STATE  │ PROGRESS │ MESSAGE │ ERROR │
+├──────────────────────────────────────┼──────────────────────┼───────────┼────────────────┼──────────┼──────────┼─────────┼───────┤
+│                                      │ Logs upload task: "s │           │                │          │          │         │       │
+│                                      │ 3://inbound-w/ddnred │           │                │          │          │         │       │
+│                                      │ /563462E2-0F70-AA17- │           │                │          │          │         │       │
+│                                      │ 6F09-4C6D37231845/re │           │                │          │          │         │       │
+│ d0dd302c-a70f-4408-b11a-81d153eccce1 │ d_realm_001/REDFE-16 │ logupload │       494      │ complete │   100%   │         │       │
+│                                      │ 89-StorageNode-March │           │                │          │          │         │       │
+│                                      │ 9/heavy_202603091535 │           │                │          │          │         │       │
+│                                      │ 47-72d53004-107a-4fa │           │                │          │          │         │       │
+│                                      │ f-86d1-0f05516cada4. │           │                │          │          │         │       │
+│                                      │         tar"         │           │                │          │          │         │       │
+└──────────────────────────────────────┴──────────────────────┴───────────┴────────────────┴──────────┴──────────┴─────────┴───────┘
+┌───────┬────────────────────────┬───────────────────────────────┬──────────┬──────────┬─────────┬───────┐
+│ STAGE │          NAME          │        TRANSITION TIME        │   STATE  │ PROGRESS │ MESSAGE │ ERROR │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   0   │      Generate SOS data │ 2026-03-09 15:36:21 +0000 UTC │ complete │   100%   │         │       │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   1   │  Generate command data │ 2026-03-09 15:36:23 +0000 UTC │ complete │   100%   │         │       │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   2   │       Collect log data │ 2026-03-09 15:37:06 +0000 UTC │ complete │   100%   │         │       │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   3   │ Generate manifest File │ 2026-03-09 15:37:06 +0000 UTC │ complete │   100%   │         │       │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   4   │          Compress Logs │ 2026-03-09 15:37:08 +0000 UTC │ complete │   100%   │         │       │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   5   │ Upload logs (1.085 GB) │ 2026-03-09 15:44:02 +0000 UTC │ complete │   100%   │         │       │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   6   │          Cleanup files │ 2026-03-09 15:44:03 +0000 UTC │ complete │   100%   │         │       │
+└───────┴────────────────────────┴───────────────────────────────┴──────────┴──────────┴─────────┴───────┘
+
+
+krajara@red01:/var/log/red/cluster1-72d53004-107a-4faf-86d1-0f05516cada4/1$ ls -1 | grep sig_10
+2026-03-09_15:25:19.345667-sig_10
+2026-03-09_15:29:58.822767-sig_10
+
+krajara@red01:/var/log/red/cluster1-72d53004-107a-4faf-86d1-0f05516cada4/1/2026-03-09_15:29:58.822767-sig_10$ pwd
+/var/log/red/cluster1-72d53004-107a-4faf-86d1-0f05516cada4/1/2026-03-09_15:29:58.822767-sig_10
+
+krajara@red01:/var/log/red/cluster1-72d53004-107a-4faf-86d1-0f05516cada4/1/2026-03-09_15:29:58.822767-sig_10$ grep extent_put_sized_op *.trcrpt | wc -l
+8335
+krajara@red01:/var/log/red/cluster1-72d53004-107a-4faf-86d1-0f05516cada4/1/2026-03-09_15:29:58.822767-sig_10$ grep extent_put_sized_op *.trcrpt | tail -5
+level04[038].trcrpt:2026-03-09 15:29:43.280226521    1    212 38 object 4 src/hndlr/object_ops/object_put.cpp:591 extent_put_sized_op 0x7fffe7926ba0: task done with rc 0 in 320 uS: ext_io 0 uS, attr_io 10 uS, opre_io 309
+level04[038].trcrpt:2026-03-09 15:29:43.285336877    1    212 38 object 4 src/hndlr/object_ops/object_put.cpp:343 extent_put_sized_op 0x7fffe7949de0: OSTOBJ:0x0000000000000000:00000000000023AF set new OST object size 8587837440, granularity 2097152, truncgen 4784003378839563
+level04[038].trcrpt:2026-03-09 15:29:43.285802683    1    212 38 object 4 src/hndlr/object_ops/object_put.cpp:591 extent_put_sized_op 0x7fffe7949de0: task done with rc 0 in 474 uS: ext_io 0 uS, attr_io 11 uS, opre_io 461
+level04[038].trcrpt:2026-03-09 15:29:43.290484644    1    212 38 object 4 src/hndlr/object_ops/object_put.cpp:343 extent_put_sized_op 0x7fffe795e378: OSTOBJ:0x0000000000000000:00000000000023AF set new OST object size 8589934592, granularity 2097152, truncgen 4784003378839563
+level04[038].trcrpt:2026-03-09 15:29:43.290758647    1    212 38 object 4 src/hndlr/object_ops/object_put.cpp:591 extent_put_sized_op 0x7fffe795e378: task done with rc 0 in 283 uS: ext_io 0 uS, attr_io 12 uS, opre_io 270
+
+Client Node:
+krajara@red01:~$ redcli logs upload -C "REDFE-1689-ClientNode-March9" -l heavy -t posix -n lux14,lux23,lux24 -b ddn_production
+1:35PM INF Creating heavy log bundle
+1:35PM INF Collecting logs from [lux14 lux23 lux24]
+1:35PM INF Logs upload task [cf7ddd8b-acd5-4016-8761-b0cd7ae4bce0] has been started.
+1:35PM INF Logs URL: s3://inbound-w/ddnred/563462E2-0F70-AA17-6F09-4C6D37231845/red_realm_001/REDFE-1689-ClientNode-March9/client_20260309193521-72d53004-107a-4faf-86d1-0f05516cada4.tar on server 192.168.192.201
+
+krajara@red01:~$ redcli task show cf7ddd8b-acd5-4016-8761-b0cd7ae4bce0
+┌──────────────────────────────────────┬──────────────────────┬───────────┬────────────────┬──────────┬──────────┬─────────┬───────┐
+│                 UUID                 │         NAME         │    TYPE   │ DURATION (sec) │   STATE  │ PROGRESS │ MESSAGE │ ERROR │
+├──────────────────────────────────────┼──────────────────────┼───────────┼────────────────┼──────────┼──────────┼─────────┼───────┤
+│                                      │ Logs upload task: "s │           │                │          │          │         │       │
+│                                      │ 3://inbound-w/ddnred │           │                │          │          │         │       │
+│                                      │ /563462E2-0F70-AA17- │           │                │          │          │         │       │
+│                                      │ 6F09-4C6D37231845/re │           │                │          │          │         │       │
+│ cf7ddd8b-acd5-4016-8761-b0cd7ae4bce0 │ d_realm_001/REDFE-16 │ logupload │      2777      │ complete │   100%   │         │       │
+│                                      │ 89-ClientNode-March9 │           │                │          │          │         │       │
+│                                      │ /client_202603091935 │           │                │          │          │         │       │
+│                                      │ 21-72d53004-107a-4fa │           │                │          │          │         │       │
+│                                      │ f-86d1-0f05516cada4. │           │                │          │          │         │       │
+│                                      │         tar"         │           │                │          │          │         │       │
+└──────────────────────────────────────┴──────────────────────┴───────────┴────────────────┴──────────┴──────────┴─────────┴───────┘
+┌───────┬────────────────────────┬───────────────────────────────┬──────────┬──────────┬─────────┬───────┐
+│ STAGE │          NAME          │        TRANSITION TIME        │   STATE  │ PROGRESS │ MESSAGE │ ERROR │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   0   │       Collect log data │ 2026-03-09 19:37:31 +0000 UTC │ complete │   100%   │         │       │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   1   │          Compress Logs │ 2026-03-09 19:37:59 +0000 UTC │ complete │   100%   │         │       │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   2   │ Upload logs (7.299 GB) │ 2026-03-09 20:21:39 +0000 UTC │ complete │   100%   │         │       │
+├───────┼────────────────────────┼───────────────────────────────┼──────────┼──────────┼─────────┼───────┤
+│   3   │          Cleanup files │ 2026-03-09 20:21:39 +0000 UTC │ complete │   100%   │         │       │
+└───────┴────────────────────────┴───────────────────────────────┴──────────┴──────────┴─────────┴───────┘
+
+[krajara@lux23 redfs]$ ls -1 | grep sig_10 | grep "2026-03-09"
+2026-03-09_09:25:47.463703-sig_10.4345.redfsd
+2026-03-09_09:30:02.910795-sig_10.4345.redfsd
+
+[krajara@lux23 2026-03-09_09:30:02.910795-sig_10.4345.redfsd]$ pwd
+/var/log/red/client/redfs/2026-03-09_09:30:02.910795-sig_10.4345.redfsd
+[krajara@lux23 2026-03-09_09:30:02.910795-sig_10.4345.redfsd]$ grep rfs_write_zero_copy_op_t *.trcrpt | wc -l
+31697
+[krajara@lux23 2026-03-09_09:30:02.910795-sig_10.4345.redfsd]$ grep rfs_write_zero_copy_op_t *.trcrpt | tail -5
+level05[120].trcrpt:2026-03-09 09:28:29.310766193 0xe0001   4492 120 redfs_client 5 src/client/rfs/rfs_write.cpp:608 rfs_write_zero_copy_op_t: posix write done inum 15126 fsize 3785359360 written 2097152
+level05[124].trcrpt:2026-03-09 09:28:08.644410874 0xe0001   4496 124 redfs_client 5 src/client/rfs/rfs_write.cpp:608 rfs_write_zero_copy_op_t: posix write done inum 16092 fsize 148897792 written 2097152
+level05[125].trcrpt:2026-03-09 09:28:29.943322426 0xe0001   4497 125 redfs_client 5 src/client/rfs/rfs_write.cpp:608 rfs_write_zero_copy_op_t: posix write done inum 17132 fsize 4018143232 written 2097152
+level05[126].trcrpt:2026-03-09 09:28:31.802373284 0xe0001   4498 126 redfs_client 5 src/client/rfs/rfs_write.cpp:608 rfs_write_zero_copy_op_t: posix write done inum 17132 fsize 4351590400 written 2097152
+level05[127].trcrpt:2026-03-09 09:28:31.792701143 0xe0001   4499 127 redfs_client 5 src/client/rfs/rfs_write.cpp:608 rfs_write_zero_copy_op_t: posix write done inum 17132 fsize 4349493248 written 2097152
+
+### Date
+[krajara@lux-login1 ~]$ date; pdsh -w lux01,lux02,lux03,lux05,lux07,lux08,lux09,lux10,lux11,lux12,lux13,lux14,lux17,lux18,lux19,lux20,lux21,lux22,lux23,lux24,lux25,lux28,lux29,lux30,lux31,lux32,lux35,lux36,lux37,lux38,red[01-10] "date" | dshbak -c
+Mon Mar  9 14:12:59 MDT 2026
+----------------
+lux[01-03,05,07-14,17-25,28-32,35-38],red[01-10]
+----------------
+Mon Mar  9 02:13:00 PM MDT 2026
